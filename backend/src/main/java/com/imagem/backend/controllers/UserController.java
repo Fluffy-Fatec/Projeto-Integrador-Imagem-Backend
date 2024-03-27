@@ -4,6 +4,7 @@ package com.imagem.backend.controllers;
 import com.imagem.backend.domain.User;
 import com.imagem.backend.dtos.*;
 import com.imagem.backend.infra.security.TokenService;
+import com.imagem.backend.services.EmailServiceSender;
 import com.imagem.backend.services.UserService;
 import com.imagem.backend.validators.UserServiceValidator;
 import jakarta.validation.Valid;
@@ -24,11 +25,14 @@ public class UserController {
 
     private final UserServiceValidator userServiceValidator;
 
-    public UserController(AuthenticationManager authenticationManager, UserService userService, TokenService tokenService, UserServiceValidator userServiceValidator) {
+    private final EmailServiceSender emailServiceSender;
+
+    public UserController(AuthenticationManager authenticationManager, UserService userService, TokenService tokenService, UserServiceValidator userServiceValidator, EmailServiceSender emailServiceSender) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.tokenService = tokenService;
         this.userServiceValidator = userServiceValidator;
+        this.emailServiceSender = emailServiceSender;
     }
 
 
@@ -48,6 +52,13 @@ public class UserController {
         this.userService.save(data);
 
         return ResponseEntity.ok().body(new RegisterResponseDTO("conta criada com sucesso"));
+    }
+
+    @PostMapping("/invite")
+    public ResponseEntity inviteUser(@RequestBody @Valid SendInviteRequestDTO sendInviteRequestDTO){
+
+        this.emailServiceSender.sendInvite(sendInviteRequestDTO);
+        return ResponseEntity.ok().body("email enviado!");
     }
 
 }
