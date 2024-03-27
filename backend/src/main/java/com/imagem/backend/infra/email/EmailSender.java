@@ -2,40 +2,39 @@ package com.imagem.backend.infra.email;
 
 
 import com.imagem.backend.exceptions.EmailServiceUnavailable;
-import org.springframework.mail.SimpleMailMessage;
+import com.imagem.backend.utils.EmailModel;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Service
 public class EmailSender {
 
     private final JavaMailSender javaMailSender;
 
-    private final String inviteSubject = "Invite";
     public EmailSender(JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;
     }
 
     public String sendEmail(String emailInvited, String userSender){
 
-        String alphanumeric = UUID.randomUUID().toString();
-
-        var message = new SimpleMailMessage();
-        message.setFrom(userSender);
-        message.setTo(emailInvited);
-        message.setSubject(inviteSubject);
-        message.setText(alphanumeric);
-
         try {
+
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(userSender);
+            helper.setTo(emailInvited);
+            helper.setSubject(EmailModel.getInstance().getInviteSubject());
+            helper.setText(EmailModel.getInstance().getUniqueString(), true);
+
             javaMailSender.send(message);
+            return EmailModel.getInstance().getAlphanumeric();
         }catch (Exception e){
             throw new EmailServiceUnavailable();
         }
 
 
-        return alphanumeric;
     }
 
 

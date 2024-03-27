@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
-public class UserExceptionHandler extends ResponseEntityExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UserAlreadyExistException.class)
     private ResponseEntity<RestErrorMessage> userAlreadyExist(UserAlreadyExistException exception){
@@ -46,6 +46,24 @@ public class UserExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(NotInvited.class)
     private ResponseEntity<RestErrorMessage> notInvited(NotInvited exception){
         RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.NOT_FOUND,exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(threatResponse);
+    }
+
+    @ExceptionHandler(InvalidCelphone.class)
+    private ResponseEntity<RestErrorMessage> invalidCelphone(InvalidCelphone exception){
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.BAD_REQUEST,exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(threatResponse);
+    }
+
+    @ExceptionHandler(InvalidCpf.class)
+    private ResponseEntity<RestErrorMessage> invalidCpf(InvalidCpf exception){
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.BAD_REQUEST,exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(threatResponse);
+    }
+
+    @ExceptionHandler(InvalidPassword.class)
+    private ResponseEntity<RestErrorMessage> invalidPassword(InvalidPassword exception){
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.BAD_REQUEST,exception.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(threatResponse);
     }
 
