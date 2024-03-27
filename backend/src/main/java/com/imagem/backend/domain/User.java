@@ -1,6 +1,7 @@
 package com.imagem.backend.domain;
 
 
+import com.imagem.backend.domain.ENUM.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -37,13 +38,13 @@ public class User implements UserDetails {
     private String nome;
 
     @Column(length = 255, nullable = true)
-    private String cpf;
+    private String email;
 
     @Column(length = 255, nullable = true)
     private String celular;
 
     @Column(length = 255, nullable = true)
-    private String email;
+    private String cpf;
 
     @Column(nullable = true)
     private Timestamp creationdate;
