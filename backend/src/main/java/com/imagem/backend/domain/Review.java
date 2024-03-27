@@ -28,7 +28,7 @@ public class Review {
     private String sentimento;
 
     @Column(name = "titulo", length = 255, nullable = false)
-    private String title;
+    private String titulo;
 
     @Column(length = 255, nullable = true)
     private String estado;

@@ -1,4 +1,4 @@
-package com.imagem.backend.domain;
+package com.imagem.backend.domain.ENUM;
 
 public enum UserRole {
 

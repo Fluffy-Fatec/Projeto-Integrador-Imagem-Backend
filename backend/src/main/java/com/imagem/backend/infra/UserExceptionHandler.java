@@ -1,7 +1,6 @@
 package com.imagem.backend.infra;
 
-import com.imagem.backend.exceptions.UserAlreadyExistException;
-import com.imagem.backend.exceptions.UserCreateRequestNotValidException;
+import com.imagem.backend.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -20,6 +19,33 @@ public class UserExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UserCreateRequestNotValidException.class)
     private ResponseEntity<RestErrorMessage> userAlreadyExist(UserCreateRequestNotValidException exception){
         RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.BAD_REQUEST,exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(threatResponse);
+    }
+    @ExceptionHandler(EmailServiceUnavailable.class)
+    private ResponseEntity<RestErrorMessage> userEmailUnavailable(EmailServiceUnavailable exception){
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.BAD_REQUEST,exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(threatResponse);
+    }
+    @ExceptionHandler(InviteAlreadySend.class)
+    private ResponseEntity<RestErrorMessage> inviteAlreadySend(InviteAlreadySend exception){
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.BAD_REQUEST,exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(threatResponse);
+    }
+    @ExceptionHandler(UserNotAuthenticated.class)
+    private ResponseEntity<RestErrorMessage> userNotAuthenticated(UserNotAuthenticated exception){
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.BAD_REQUEST,exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(threatResponse);
+    }
+
+    @ExceptionHandler(InvalidEmail.class)
+    private ResponseEntity<RestErrorMessage> invalidEmail(InvalidEmail exception){
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.BAD_REQUEST,exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(threatResponse);
+    }
+
+    @ExceptionHandler(NotInvited.class)
+    private ResponseEntity<RestErrorMessage> notInvited(NotInvited exception){
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.NOT_FOUND,exception.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(threatResponse);
     }
 
