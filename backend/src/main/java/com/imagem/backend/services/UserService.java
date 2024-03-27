@@ -32,8 +32,12 @@ public class UserService {
 
         if(this.userRepository.findByUsername(dto.username()) != null) throw new UserAlreadyExistException();
 
+
         String encryptedPassword = new BCryptPasswordEncoder().encode(dto.password());
-        User newUser = new User(dto.username(), encryptedPassword, dto.role());
+        User newUser = new User();
+        newUser.setUsername(dto.username());
+        newUser.setRole(dto.role());
+        newUser.setPassword(encryptedPassword);
 
         this.userRepository.save(newUser);
     }
