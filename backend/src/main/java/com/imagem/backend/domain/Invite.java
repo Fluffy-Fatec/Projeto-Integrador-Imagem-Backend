@@ -26,5 +26,5 @@ public class Invite {
     private User solicitante;
 
     @Column(nullable = true)
-    private Timestamp creationDate;
+    private Timestamp creationdate;
 }
