@@ -45,16 +45,14 @@ public class UserServiceValidator {
 
     public void validCpf(String cpf){
         // Expressão regular para validar Cpf
-        String regex = "^(?!000\\.000\\.000-00|111\\.111\\.111-11|222\\.222\\.222-22|333\\.333\\.333-33|" +
-                "444\\.444\\.444-44|555\\.555\\.555-55|666\\.666\\.666-66|777\\.777\\.777-77|888\\.888\\.888-88|" +
-                "999\\.999\\.999-99)(\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2})$\n";
+        String regex = "^(?!([0-9])\\1{2}\\.\\1{3}\\.\\1{3}-\\1{2}$)(\\d{3}\\.){2}\\d{3}-\\d{2}$";
 
         // Compila a expressão regular em um padrão
         Pattern pattern = Pattern.compile(regex);
 
         Matcher matcher = pattern.matcher(cpf);
 
-        if(matcher.matches()) throw new InvalidCpf();
+        if(!matcher.matches() || cpf.length() != 14) throw new InvalidCpf();
     }
 
     public void validPassword(String password){

@@ -76,7 +76,7 @@ public class UserController {
         return ResponseEntity.ok().body(new GlobalResponseDTO("Convite enviado com sucesso!"));
     }
 
-    @PutMapping
+    @PutMapping("/update/pass")
     public ResponseEntity<GlobalResponseDTO> updatePass(@RequestBody @Valid UpdatePassRequestDTO updatePassRequestDTO){
 
         this.userServiceValidator.validPassword(updatePassRequestDTO.password());
