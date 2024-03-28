@@ -4,12 +4,15 @@ import com.imagem.backend.domain.ENUM.UserRole;
 import com.imagem.backend.domain.Invite;
 import com.imagem.backend.domain.User;
 import com.imagem.backend.dtos.RegisterDTO;
+import com.imagem.backend.dtos.UpdatePassRequestDTO;
 import com.imagem.backend.exceptions.NotInvited;
 import com.imagem.backend.exceptions.UserAlreadyExistException;
+import com.imagem.backend.infra.security.UserSession;
 import com.imagem.backend.repositories.InviteRepository;
 import com.imagem.backend.repositories.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,9 +24,12 @@ public class UserService {
 
     private final InviteRepository inviteRepository;
 
-    public UserService(UserRepository userRepository, InviteRepository inviteRepository) {
+    private final UserSession userSession;
+
+    public UserService(UserRepository userRepository, InviteRepository inviteRepository, UserSession userSession) {
         this.userRepository = userRepository;
         this.inviteRepository = inviteRepository;
+        this.userSession = userSession;
     }
 
 
@@ -47,5 +53,16 @@ public class UserService {
         newUser.setCelular(dto.celular());
 
         this.userRepository.save(newUser);
+    }
+
+    public void updpatePassUser(UpdatePassRequestDTO updatePassRequestDTO){
+
+        User userLogged = userSession.userLogged();
+        User user = (User) this.userRepository.findByUsername(userLogged.getUsername());
+
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String passEncoded = encoder.encode(updatePassRequestDTO.password());
+        user.setPassword(passEncoded);
+
     }
 }
