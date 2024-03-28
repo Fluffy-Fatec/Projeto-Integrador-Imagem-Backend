@@ -82,5 +82,7 @@ public class UserService {
         String passEncoded = encoder.encode(updatePassRequestDTO.password());
         user.setPassword(passEncoded);
 
+        this.userRepository.save(user);
+
     }
 }

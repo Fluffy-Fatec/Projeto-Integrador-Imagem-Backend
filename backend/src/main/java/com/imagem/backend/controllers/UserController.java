@@ -50,30 +50,39 @@ public class UserController {
     }
 
     @PostMapping("/register/{id}")
-    public ResponseEntity<RegisterResponseDTO> register(@PathVariable("id") UUID tokenAlphanumeric,
+    public ResponseEntity<GlobalResponseDTO> register(@PathVariable("id") UUID tokenAlphanumeric,
                                                         @RequestBody @Valid RegisterDTO data){
-        this. userServiceValidator.apply(data);
+        this.userServiceValidator.apply(data);
         this.userService.save(data,
                 tokenAlphanumeric.toString());
 
-        return ResponseEntity.ok().body(new RegisterResponseDTO("conta criada com sucesso"));
+        return ResponseEntity.ok().body(new GlobalResponseDTO("conta criada com sucesso"));
     }
 
     // Metodo simples para gerar usuario pela primeira , apagar quando for subir para main
     @PostMapping("/register/adm")
-    public ResponseEntity<RegisterResponseDTO> registerAdm(@RequestBody @Valid RegisterDTO data){
+    public ResponseEntity<GlobalResponseDTO> registerAdm(@RequestBody @Valid RegisterDTO data){
         this.userService.saveAdm(data);
 
-        return ResponseEntity.ok().body(new RegisterResponseDTO("conta criada com sucesso"));
+        return ResponseEntity.ok().body(new GlobalResponseDTO("conta criada com sucesso"));
     }
 
     @PostMapping("/invite")
-    public ResponseEntity inviteUser(@RequestBody @Valid SendInviteRequestDTO sendInviteRequestDTO){
+    public ResponseEntity<GlobalResponseDTO> inviteUser(@RequestBody @Valid SendInviteRequestDTO sendInviteRequestDTO){
 
         GmailValidator.emailValidator(sendInviteRequestDTO.emailInvited());
 
         this.emailServiceSender.sendInvite(sendInviteRequestDTO);
-        return ResponseEntity.ok().body("email enviado!");
+        return ResponseEntity.ok().body(new GlobalResponseDTO("Convite enviado com sucesso!"));
+    }
+
+    @PutMapping
+    public ResponseEntity<GlobalResponseDTO> updatePass(@RequestBody @Valid UpdatePassRequestDTO updatePassRequestDTO){
+
+        this.userServiceValidator.validPassword(updatePassRequestDTO.password());
+        this.userService.updpatePassUser(updatePassRequestDTO);
+
+        return ResponseEntity.ok().body(new GlobalResponseDTO("Atualização do usuário com sucesso!"));
     }
 
 }
