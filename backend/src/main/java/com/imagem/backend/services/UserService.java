@@ -10,6 +10,7 @@ import com.imagem.backend.exceptions.UserAlreadyExistException;
 import com.imagem.backend.infra.security.UserSession;
 import com.imagem.backend.repositories.InviteRepository;
 import com.imagem.backend.repositories.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class UserService {
 
@@ -34,15 +36,20 @@ public class UserService {
 
 
     public void save(RegisterDTO dto, String tokenInvite) {
+        log.info("Buscando usuário pelo nome de usuário...");
 
         if(this.userRepository.findByUsername(dto.username()) != null) throw new UserAlreadyExistException();
+
+        log.info("Verificando se existe algum convite...");
 
         Invite invite = inviteRepository.findBytokeninvite(tokenInvite);
 
         if(invite == null) throw new NotInvited();
 
+        log.info("Encriptando a senha do novo usuário...");
         String encryptedPassword = new BCryptPasswordEncoder().encode(dto.password());
 
+        log.info("Criando novo usuário...");
         User newUser = new User();
         newUser.setUsername(dto.username());
         newUser.setRole(UserRole.USER);
@@ -52,7 +59,11 @@ public class UserService {
         newUser.setEmail(invite.getEmail());
         newUser.setCelular(dto.celular());
 
+        log.info("Salvando novo usuário...");
         this.userRepository.save(newUser);
+
+        log.info("Deletando o convite utilizado pelo usuário...");
+        this.inviteRepository.delete(invite);
     }
 
 
@@ -74,15 +85,20 @@ public class UserService {
     }
 
     public void updpatePassUser(UpdatePassRequestDTO updatePassRequestDTO){
-
+        log.info("Buscando os dados do usuário logado...");
         User userLogged = userSession.userLogged();
+
+        log.info("Buscando o usuário logado na base...");
         User user = (User) this.userRepository.findByUsername(userLogged.getUsername());
 
+        log.info("Encriptando a nova senha do usuário...");
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String passEncoded = encoder.encode(updatePassRequestDTO.password());
         user.setPassword(passEncoded);
 
+        log.info("Salvando a nova senha do usuário...");
         this.userRepository.save(user);
+        log.info("Salva a nova senha do usuário...");
 
     }
 }

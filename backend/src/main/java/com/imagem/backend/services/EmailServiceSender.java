@@ -7,9 +7,11 @@ import com.imagem.backend.exceptions.InviteAlreadySend;
 import com.imagem.backend.infra.email.EmailSender;
 import com.imagem.backend.infra.security.UserSession;
 import com.imagem.backend.repositories.InviteRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class EmailServiceSender {
 
@@ -28,18 +30,24 @@ public class EmailServiceSender {
 
     public void sendInvite(SendInviteRequestDTO dto){
 
+        log.info("Buscando o usuário logado...");
         User userLogged = userSession.userLogged();
 
+        log.info("Tenntativa de enviar convite ao email...");
         try{
 
-        String tokenEmail = emailSender.sendEmail(dto.emailInvited(), userLogged.getEmail());
+            String tokenEmail = emailSender.sendEmail(dto.emailInvited(), userLogged.getEmail());
 
-        Invite invite = new Invite();
-        invite.setEmail(dto.emailInvited());
-        invite.setSolicitante(userLogged);
-        invite.setTokeninvite(tokenEmail);
+            log.info("Criando novo registro de convite email...");
+            Invite invite = new Invite();
+            invite.setEmail(dto.emailInvited());
+            invite.setSolicitante(userLogged);
+            invite.setTokeninvite(tokenEmail);
 
-        inviteRepository.save(invite);
+            log.info("Salvando novo registro de convite email...");
+            inviteRepository.save(invite);
+
+            log.info("Novo registro salvo...");
 
         }catch (Exception e){
             throw new InviteAlreadySend();

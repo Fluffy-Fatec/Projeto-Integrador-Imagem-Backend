@@ -5,12 +5,14 @@ import com.imagem.backend.exceptions.InvalidCelphone;
 import com.imagem.backend.exceptions.InvalidCpf;
 import com.imagem.backend.exceptions.InvalidPassword;
 import com.imagem.backend.exceptions.UserCreateRequestNotValidException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
+@Slf4j
 public class UserServiceValidator {
 
 
@@ -40,6 +42,7 @@ public class UserServiceValidator {
 
         Matcher matcher = pattern.matcher(numero);
 
+        log.info("Validando celular...");
         if(!matcher.matches()) throw new InvalidCelphone();
     }
 
@@ -52,6 +55,7 @@ public class UserServiceValidator {
 
         Matcher matcher = pattern.matcher(cpf);
 
+        log.info("Validando cpf...");
         if(!matcher.matches() || cpf.length() != 14) throw new InvalidCpf();
     }
 
@@ -71,6 +75,7 @@ public class UserServiceValidator {
 
         Matcher matcher = pattern.matcher(password);
 
+        log.info("Validando senha...");
         if(!matcher.matches()) throw new InvalidPassword();
 
     }
