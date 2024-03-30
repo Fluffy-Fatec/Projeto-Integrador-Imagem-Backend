@@ -46,7 +46,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(NotInvited.class)
     private ResponseEntity<RestErrorMessage> notInvited(NotInvited exception){
         RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.NOT_FOUND,exception.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(threatResponse);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(threatResponse);
     }
 
     @ExceptionHandler(InvalidCelphone.class)
@@ -70,7 +70,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(LoginFailed.class)
     private ResponseEntity<RestErrorMessage> invalidPassword(LoginFailed exception){
         RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.FORBIDDEN,exception.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(threatResponse);
+    }
+
+    @ExceptionHandler(EmailAlreadyInvited.class)
+    private ResponseEntity<RestErrorMessage> emailAlreadyInvited(EmailAlreadyInvited exception){
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.BAD_REQUEST,exception.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(threatResponse);
     }
+
+
 
 }

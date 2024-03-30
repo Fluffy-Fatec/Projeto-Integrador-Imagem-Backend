@@ -3,10 +3,12 @@ package com.imagem.backend.services;
 import com.imagem.backend.domain.Invite;
 import com.imagem.backend.domain.User;
 import com.imagem.backend.dtos.SendInviteRequestDTO;
+import com.imagem.backend.exceptions.EmailAlreadyInvited;
 import com.imagem.backend.exceptions.InviteAlreadySend;
 import com.imagem.backend.infra.email.EmailSender;
 import com.imagem.backend.infra.security.UserSession;
 import com.imagem.backend.repositories.InviteRepository;
+import com.imagem.backend.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -19,16 +21,22 @@ public class EmailServiceSender {
 
     private final EmailSender emailSender;
 
+    private final UserRepository userRepository;
+
     private UserSession userSession;
 
-    public EmailServiceSender(InviteRepository inviteRepository, EmailSender emailSender, UserSession userSession) {
+    public EmailServiceSender(InviteRepository inviteRepository, EmailSender emailSender, UserRepository userRepository, UserSession userSession) {
         this.inviteRepository = inviteRepository;
         this.emailSender = emailSender;
+        this.userRepository = userRepository;
         this.userSession = userSession;
     }
 
 
     public void sendInvite(SendInviteRequestDTO dto){
+
+        log.info("Buscando se o email ja existe...");
+        if(this.userRepository.existsByEmail(dto.emailInvited())) throw new EmailAlreadyInvited();
 
         log.info("Buscando o usuário logado...");
         User userLogged = userSession.userLogged();
