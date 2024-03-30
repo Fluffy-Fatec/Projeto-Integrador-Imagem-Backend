@@ -45,6 +45,6 @@ public class Review {
     @Column(nullable = true)
     private Double lon;
 
-    @Column(name = "creationDate", nullable = false)
+    @Column(name = "creationDate", nullable = false, insertable = false)
     private Timestamp creationDate;
 }

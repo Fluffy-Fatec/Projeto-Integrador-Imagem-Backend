@@ -46,7 +46,7 @@ public class User implements UserDetails {
     @Column(length = 255, nullable = true)
     private String cpf;
 
-    @Column(nullable = true)
+    @Column(nullable = true, insertable = false)
     private Timestamp creationdate;
 
     public User(String login, String password, UserRole role){
