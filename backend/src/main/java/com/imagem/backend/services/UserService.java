@@ -8,6 +8,7 @@ import com.imagem.backend.domain.User;
 import com.imagem.backend.dtos.*;
 import com.imagem.backend.exceptions.NotInvited;
 import com.imagem.backend.exceptions.UserAlreadyExistException;
+import com.imagem.backend.exceptions.UserNotExist;
 import com.imagem.backend.infra.security.UserSession;
 import com.imagem.backend.repositories.FieldChangeRepository;
 import com.imagem.backend.repositories.InviteRepository;
@@ -266,5 +267,47 @@ public class UserService {
 
 
         return listUpdateFieldChange;
+    }
+
+    public List<ListUsersResponseDTO> listAllUsers(){
+
+        log.info("Buscando por todos os usuarios...");
+        List<User> listUser = this.userRepository.findAll();
+
+        List<ListUsersResponseDTO> listUsersResponseDTO = new ArrayList<>();
+
+        log.info("Preparando o response do metodo...");
+        for(User user: listUser){
+            ListUsersResponseDTO usersResponseDTO = new ListUsersResponseDTO();
+            usersResponseDTO.setId(user.getId());
+            usersResponseDTO.setName(user.getNome());
+            usersResponseDTO.setEmail(user.getEmail());
+            usersResponseDTO.setUserRole(user.getRole());
+            usersResponseDTO.setCreation_date(user.getCreationdate());
+
+            listUsersResponseDTO.add(usersResponseDTO);
+        }
+
+        return  listUsersResponseDTO;
+    }
+    public ListUsersResponseDTO listUser(Integer id){
+
+        log.info("Buscando pelo id do usuario...");
+        User listUser = this.userRepository.findById(id.longValue()).orElse(null);
+
+        if(listUser == null){
+            throw new UserNotExist();
+        }
+
+        log.info("Preparando o response do metodo...");
+        ListUsersResponseDTO usersResponseDTO = new ListUsersResponseDTO();
+
+        usersResponseDTO.setId(listUser.getId());
+        usersResponseDTO.setName(listUser.getNome());
+        usersResponseDTO.setEmail(listUser.getEmail());
+        usersResponseDTO.setUserRole(listUser.getRole());
+        usersResponseDTO.setCreation_date(listUser.getCreationdate());
+
+        return usersResponseDTO;
     }
 }
