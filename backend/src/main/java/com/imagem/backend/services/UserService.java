@@ -1,13 +1,17 @@
 package com.imagem.backend.services;
 
+import com.imagem.backend.domain.ENUM.StatusFieldChange;
 import com.imagem.backend.domain.ENUM.UserRole;
+import com.imagem.backend.domain.FieldChange;
 import com.imagem.backend.domain.Invite;
 import com.imagem.backend.domain.User;
 import com.imagem.backend.dtos.RegisterDTO;
 import com.imagem.backend.dtos.UpdatePassRequestDTO;
+import com.imagem.backend.dtos.UpdateUserRequestDTO;
 import com.imagem.backend.exceptions.NotInvited;
 import com.imagem.backend.exceptions.UserAlreadyExistException;
 import com.imagem.backend.infra.security.UserSession;
+import com.imagem.backend.repositories.FieldChangeRepository;
 import com.imagem.backend.repositories.InviteRepository;
 import com.imagem.backend.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -28,10 +32,12 @@ public class UserService {
 
     private final UserSession userSession;
 
-    public UserService(UserRepository userRepository, InviteRepository inviteRepository, UserSession userSession) {
+    private final FieldChangeRepository fieldChangeRepository;
+    public UserService(UserRepository userRepository, InviteRepository inviteRepository, UserSession userSession, FieldChangeRepository fieldChangeRepository) {
         this.userRepository = userRepository;
         this.inviteRepository = inviteRepository;
         this.userSession = userSession;
+        this.fieldChangeRepository = fieldChangeRepository;
     }
 
 
@@ -100,5 +106,34 @@ public class UserService {
         this.userRepository.save(user);
         log.info("Salva a nova senha do usuário...");
 
+    }
+
+    public void updateUser(UpdateUserRequestDTO dto){
+
+        User userLogged = userSession.userLogged();
+
+        User user = userRepository.findById(Long.valueOf(userLogged.getId())).orElseThrow();
+
+        if(user.getRole() == UserRole.ADMIN) {
+
+            user.setUsername(dto.username());
+            user.setCpf(dto.cpf());
+            user.setNome(dto.nome());
+            user.setEmail(dto.email());
+            user.setCelular(dto.celular());
+
+            userRepository.save(user);
+        }else{
+            FieldChange fieldChange = new FieldChange();
+
+            fieldChange.setUser(user);
+            fieldChange.setNovoCelular(dto.celular());
+            fieldChange.setNovoCpf(dto.cpf());
+            fieldChange.setNovoEmail(dto.email());
+            fieldChange.setNovoUsername(dto.username());
+            fieldChange.setStatus(StatusFieldChange.PENDENTE.getStatus());
+
+            fieldChangeRepository.save(fieldChange);
+        }
     }
 }

@@ -85,5 +85,15 @@ public class UserController {
         return ResponseEntity.ok().body(new GlobalResponseDTO("Atualização do usuário com sucesso!"));
     }
 
+    @PutMapping("/update/user")
+    public ResponseEntity updateUser(@RequestBody @Valid UpdateUserRequestDTO data){
+
+        this.userServiceValidator.validCelphone(data.celular());
+        this.userServiceValidator.validCpf(data.cpf());
+        this.userService.updateUser(data);
+
+        return ResponseEntity.ok().body(new GlobalResponseDTO("Ususário foi atualizado"));
+    }
+
 }
 
