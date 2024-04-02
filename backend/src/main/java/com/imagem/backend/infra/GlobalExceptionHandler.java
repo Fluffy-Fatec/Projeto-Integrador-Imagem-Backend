@@ -67,4 +67,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(threatResponse);
     }
 
+    @ExceptionHandler(LoginFailed.class)
+    private ResponseEntity<RestErrorMessage> invalidPassword(LoginFailed exception){
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.FORBIDDEN,exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(threatResponse);
+    }
+
 }
