@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.imagem.backend.domain.User;
+import com.imagem.backend.dtos.LoginResponseDTO;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -16,14 +17,14 @@ public class TokenService {
 
     private final String secret = "717ee184-8648-4d5e-b8c7-049ef21119e7";
 
-    public String generateToken(User user){
+    public LoginResponseDTO generateToken(User user){
         try{
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            return JWT.create()
+            return new LoginResponseDTO(JWT.create()
                     .withIssuer("auth-api")
                     .withSubject(user.getUsername())
                     .withExpiresAt(generateExpirationDate())
-                    .sign(algorithm);
+                    .sign(algorithm), user.getRole().getRole());
 
         }catch(JWTCreationException e){
             throw new RuntimeException("Erro ao gerar token", e);

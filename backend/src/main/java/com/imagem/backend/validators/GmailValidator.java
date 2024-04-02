@@ -17,7 +17,7 @@ public class GmailValidator {
 
     public static void emailValidator(String email){
 
-        log.info("Validando o email a ser enviado o convite...");
+        log.info("Validando o email...");
         Matcher matcher = pattern.matcher(email);
         if(!matcher.matches()) throw new InvalidEmail();
     }

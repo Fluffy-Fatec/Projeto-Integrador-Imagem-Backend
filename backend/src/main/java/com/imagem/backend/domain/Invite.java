@@ -29,6 +29,6 @@ public class Invite {
     @JoinColumn(name = "solicitante")
     private User solicitante;
 
-    @Column(nullable = true)
+    @Column(nullable = true, insertable = false)
     private Timestamp creationdate;
 }
