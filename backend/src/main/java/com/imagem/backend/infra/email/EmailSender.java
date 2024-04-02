@@ -22,18 +22,20 @@ public class EmailSender {
     public String sendEmail(String emailInvited, String userSender){
         log.info("Preparando o email para ser enviado...");
         try {
+            EmailModel emailModel = new EmailModel();
+
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setFrom(userSender);
             helper.setTo(emailInvited);
-            helper.setSubject(EmailModel.getInstance().getInviteSubject());
-            helper.setText(EmailModel.getInstance().getUniqueString(), true);
+            helper.setSubject(emailModel.getInviteSubject());
+            helper.setText(emailModel.getUniqueString(), true);
 
             log.info("Enviando o convite ao email...");
             javaMailSender.send(message);
             log.info("Email enviado...");
 
-            return EmailModel.getInstance().getAlphanumeric();
+            return emailModel.getAlphanumeric();
         }catch (Exception e){
             throw new EmailServiceUnavailable();
         }

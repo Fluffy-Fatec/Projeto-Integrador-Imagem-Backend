@@ -11,7 +11,7 @@ public class EmailModel {
 
     private String inviteSubject;
 
-    private EmailModel() {
+    public EmailModel() {
         this.inviteSubject = "Invite";
         this.alphanumeric = UUID.randomUUID().toString();
         this.uniqueString = "<!DOCTYPE html>\n" +
@@ -147,7 +147,7 @@ public class EmailModel {
                 "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td class=\"pad\" style=\"padding-bottom:10px;padding-left:35px;padding-right:35px;padding-top:10px;\">\n" +
                 "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div style=\"color:#363636;direction:ltr;font-family:Arial, Helvetica, sans-serif;font-size:16px;font-weight:400;letter-spacing:0px;line-height:120%;text-align:left;mso-line-height-alt:19.2px;\">\n" +
                 "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p style=\"margin: 0; margin-bottom: 16px;\">Welcome to our platform! We're thrilled to have you join our community. To get started, follow the simple steps below to create your new user account:</p>\n" +
-                "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p style=\"margin: 0; margin-bottom: 16px;\"><strong>Click the Link:</strong> Navigate to the following link: <a href=\"http://www.localhost.com/"+alphanumeric+"\""+" target=\"_blank\" style=\"text-decoration: underline; color: #7747FF;\" rel=\"noopener\">click here to access.</a></p>\n" +
+                "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p style=\"margin: 0; margin-bottom: 16px;\"><strong>Click the Link:</strong> Navigate to the following link: <a href=\"http://localhost:5173/auth/register/"+alphanumeric+"\""+" target=\"_blank\" style=\"text-decoration: underline; color: #7747FF;\" rel=\"noopener\">click here to access.</a></p>\n" +
                 "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p style=\"margin: 0; margin-bottom: 16px;\"><strong>Fill in Your Details:</strong> Once on the user account creation page, you'll be prompted to fill in some basic information such as your name, email address, and desired password.</p>\n" +
                 "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p style=\"margin: 0; margin-bottom: 16px;\"><strong>Verify Your Email:</strong> After submitting your details, check your email inbox for a verification message. Click the verification link provided to confirm your email address.</p>\n" +
                 "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p style=\"margin: 0; margin-bottom: 16px;\"><strong>Start Exploring:</strong> With your account successfully created and verified, you're now ready to explore all the features and benefits our platform has to offer!</p>\n" +
@@ -222,13 +222,6 @@ public class EmailModel {
                 "</body>\n" +
                 "\n" +
                 "</html>";
-    }
-
-    public static synchronized EmailModel getInstance() {
-        if (instance == null) {
-            instance = new EmailModel();
-        }
-        return instance;
     }
 
     public String getAlphanumeric() {
