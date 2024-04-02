@@ -8,6 +8,7 @@ import com.imagem.backend.domain.User;
 import com.imagem.backend.dtos.*;
 import com.imagem.backend.exceptions.NotInvited;
 import com.imagem.backend.exceptions.UserAlreadyExistException;
+import com.imagem.backend.exceptions.UserNotExist;
 import com.imagem.backend.infra.security.UserSession;
 import com.imagem.backend.repositories.FieldChangeRepository;
 import com.imagem.backend.repositories.InviteRepository;
@@ -288,5 +289,25 @@ public class UserService {
         }
 
         return  listUsersResponseDTO;
+    }
+    public ListUsersResponseDTO listUser(Integer id){
+
+        log.info("Buscando pelo id do usuario...");
+        User listUser = this.userRepository.findById(id.longValue()).orElse(null);
+
+        if(listUser == null){
+            throw new UserNotExist();
+        }
+
+        log.info("Preparando o response do metodo...");
+        ListUsersResponseDTO usersResponseDTO = new ListUsersResponseDTO();
+
+        usersResponseDTO.setId(listUser.getId());
+        usersResponseDTO.setName(listUser.getNome());
+        usersResponseDTO.setEmail(listUser.getEmail());
+        usersResponseDTO.setUserRole(listUser.getRole());
+        usersResponseDTO.setCreation_date(listUser.getCreationdate());
+
+        return usersResponseDTO;
     }
 }

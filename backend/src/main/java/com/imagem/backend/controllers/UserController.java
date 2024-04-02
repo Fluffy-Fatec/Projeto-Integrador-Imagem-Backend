@@ -126,5 +126,15 @@ public class UserController {
         return ResponseEntity.ok().body(listUsersResponseDTO);
     }
 
+    @GetMapping("/list/user/{id}")
+    public ResponseEntity<ListUsersResponseDTO> listUser(@PathVariable("id") Integer id){
+
+        ListUsersResponseDTO listUsersResponseDTO = this.userService.listUser(id);
+
+        return ResponseEntity.ok().body(listUsersResponseDTO);
+    }
+
+
+
 }
 

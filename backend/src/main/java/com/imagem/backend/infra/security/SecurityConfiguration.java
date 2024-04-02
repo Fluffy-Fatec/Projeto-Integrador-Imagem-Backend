@@ -37,6 +37,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.PUT, "/auth/update/user/approve").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/auth/update/user/list").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/auth/list/user").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/auth/list/user/**").hasRole("ADMIN")
                         .anyRequest()
                         .authenticated()
                 )
