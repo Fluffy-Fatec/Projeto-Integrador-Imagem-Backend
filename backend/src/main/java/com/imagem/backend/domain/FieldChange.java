@@ -1,5 +1,6 @@
 package com.imagem.backend.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.imagem.backend.domain.ENUM.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,38 +20,39 @@ public class FieldChange {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idAdmin")
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "idadmin", nullable = true)
     private User admin;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idUser")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "iduser")
     private User user;
 
     @Column(length = 255, nullable = true)
-    private String novoUsername;
+    private String novousername;
 
     @Column(length = 255, nullable = true)
-    private String novoNome;
+    private String novonome;
 
     @Column(length = 255, nullable = true)
-    private String novoEmail;
+    private String novoemail;
 
     @Column(length = 255, nullable = true)
-    private String novoCelular;
+    private String novocelular;
 
     @Column(length = 255, nullable = true)
-    private String novoCpf;
+    private String novocpf;
 
     @Column(length = 255, nullable = true)
     private String status;
 
-    @Column(name = "dataAprovacao", nullable = false)
+    @Column(name = "dataaprovacao", nullable = false)
     private Timestamp dataAprovacao;
 
-    @Column(name = "dataRejeicao", nullable = false)
+    @Column(name = "datarejeicao", nullable = false)
     private Timestamp dataRejeicao;
 
-    @Column(name = "creationDate", nullable = false, insertable = false)
-    private Timestamp creationDate;
+    @Column(nullable = false, insertable = false)
+    private Timestamp creationdate;
 }

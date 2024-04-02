@@ -1,6 +1,7 @@
 package com.imagem.backend.controllers;
 
 
+import com.imagem.backend.domain.FieldChange;
 import com.imagem.backend.domain.User;
 import com.imagem.backend.dtos.*;
 import com.imagem.backend.infra.security.TokenService;
@@ -14,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -90,9 +92,30 @@ public class UserController {
 
         this.userServiceValidator.validCelphone(data.celular());
         this.userServiceValidator.validCpf(data.cpf());
+        GmailValidator.emailValidator(data.email());
         this.userService.updateUser(data);
 
         return ResponseEntity.ok().body(new GlobalResponseDTO("Ususário foi atualizado"));
+    }
+
+    @PutMapping("/update/user/approve")
+    public ResponseEntity updateUserApprove(@RequestBody @Valid UserUpdateApproveRequestDTO data){
+
+        try {
+            this.userService.updateUserToApprove(data);
+        }catch (Exception e){
+
+        }
+
+        return ResponseEntity.ok().body(new GlobalResponseDTO("Atualizacao foi aceita foi atualizado"));
+    }
+
+    @GetMapping("/update/user/list")
+    public ResponseEntity<List<RespondeListFieldChangeDTO>> listUpdateUserApprove(){
+
+        List<RespondeListFieldChangeDTO> listSolicitaation= this.userService.listUpdateSolicitaions();
+
+        return ResponseEntity.ok().body(listSolicitaation);
     }
 
 }
