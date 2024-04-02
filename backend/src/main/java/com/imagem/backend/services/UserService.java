@@ -267,4 +267,26 @@ public class UserService {
 
         return listUpdateFieldChange;
     }
+
+    public List<ListUsersResponseDTO> listAllUsers(){
+
+        log.info("Buscando por todos os usuarios...");
+        List<User> listUser = this.userRepository.findAll();
+
+        List<ListUsersResponseDTO> listUsersResponseDTO = new ArrayList<>();
+
+        log.info("Preparando o response do metodo...");
+        for(User user: listUser){
+            ListUsersResponseDTO usersResponseDTO = new ListUsersResponseDTO();
+            usersResponseDTO.setId(user.getId());
+            usersResponseDTO.setName(user.getNome());
+            usersResponseDTO.setEmail(user.getEmail());
+            usersResponseDTO.setUserRole(user.getRole());
+            usersResponseDTO.setCreation_date(user.getCreationdate());
+
+            listUsersResponseDTO.add(usersResponseDTO);
+        }
+
+        return  listUsersResponseDTO;
+    }
 }

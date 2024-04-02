@@ -118,5 +118,13 @@ public class UserController {
         return ResponseEntity.ok().body(listSolicitaation);
     }
 
+    @GetMapping("/list/user")
+    public ResponseEntity<List<ListUsersResponseDTO>> listAllUsers(){
+
+        List<ListUsersResponseDTO> listUsersResponseDTO = this.userService.listAllUsers();
+
+        return ResponseEntity.ok().body(listUsersResponseDTO);
+    }
+
 }
 
