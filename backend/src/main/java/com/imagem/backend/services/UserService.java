@@ -8,6 +8,7 @@ import com.imagem.backend.domain.User;
 import com.imagem.backend.dtos.*;
 import com.imagem.backend.exceptions.NotInvited;
 import com.imagem.backend.exceptions.UserAlreadyExistException;
+import com.imagem.backend.exceptions.UserNotAuthenticated;
 import com.imagem.backend.exceptions.UserNotExist;
 import com.imagem.backend.infra.security.UserSession;
 import com.imagem.backend.repositories.FieldChangeRepository;
@@ -309,5 +310,21 @@ public class UserService {
         usersResponseDTO.setCreation_date(listUser.getCreationdate());
 
         return usersResponseDTO;
+    }
+    public void deleteUser(Integer id){
+
+        log.info("Buscando pelo id do usuario...");
+        User user = this.userRepository.findById(id.longValue()).orElse(null);
+
+        if(user == null){
+            throw new UserNotAuthenticated();
+        }
+
+        user.setUserField(null);
+        user.setInvites(null);
+        this.userRepository.save(user);
+
+        this.userRepository.delete(user);
+
     }
 }

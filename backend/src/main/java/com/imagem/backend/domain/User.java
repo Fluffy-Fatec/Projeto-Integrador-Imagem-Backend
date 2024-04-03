@@ -49,6 +49,16 @@ public class User implements UserDetails {
     @Column(nullable = true, insertable = false)
     private Timestamp creationdate;
 
+    @OneToMany(mappedBy = "solicitante")
+    private List<Invite> invites;
+
+    @OneToMany(mappedBy = "user")
+    private List<FieldChange> userField;
+
+
+    @OneToMany(mappedBy = "admin")
+    private List<FieldChange> adminField;
+
     public User(String login, String password, UserRole role){
         this.username = login;
         this.password = password;
