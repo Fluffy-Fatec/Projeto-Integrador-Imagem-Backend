@@ -38,6 +38,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/auth/update/user/list").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/auth/list/user").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/auth/list/user/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/graphics/list").hasRole("ADMIN")
                         .anyRequest()
                         .authenticated()
                 )
