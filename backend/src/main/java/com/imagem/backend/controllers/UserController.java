@@ -1,6 +1,7 @@
 package com.imagem.backend.controllers;
 
 
+import com.imagem.backend.domain.ENUM.UserRole;
 import com.imagem.backend.domain.FieldChange;
 import com.imagem.backend.domain.User;
 import com.imagem.backend.dtos.*;
@@ -134,7 +135,13 @@ public class UserController {
         return ResponseEntity.ok().body(listUsersResponseDTO);
     }
 
+    @PutMapping("/update/user/role")
+    public ResponseEntity updateUserRole(@RequestBody @Valid UpdateUserRoleRequestDTO roleRequestDTO){
 
+        this.userService.updateRole(roleRequestDTO);
+
+        return ResponseEntity.ok().body(new GlobalResponseDTO("Atualizacao de acesso realizada"));
+    }
 
 }
 

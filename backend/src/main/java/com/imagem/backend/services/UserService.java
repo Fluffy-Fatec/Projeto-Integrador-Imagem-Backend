@@ -89,7 +89,7 @@ public class UserService {
         newUser.setPassword(encryptedPassword);
         newUser.setCpf(dto.cpf());
         newUser.setNome(dto.nome());
-        newUser.setEmail("emailteste@gmail.com");
+        newUser.setEmail("emailteste3@gmail.com");
         newUser.setCelular(dto.celular());
 
         this.userRepository.save(newUser);
@@ -119,7 +119,7 @@ public class UserService {
         User userLogged = userSession.userLogged();
 
         log.info("Buscando o usuário logado na base...");
-        User user = userRepository.findById(Long.valueOf(userLogged.getId())).orElseThrow();
+        User user = userRepository.findById(userLogged.getId()).orElseThrow();
 
         log.info("Verificando a role do usuario...");
         if(user.getRole() == UserRole.ADMIN) {
@@ -293,7 +293,7 @@ public class UserService {
     public ListUsersResponseDTO listUser(Integer id){
 
         log.info("Buscando pelo id do usuario...");
-        User listUser = this.userRepository.findById(id.longValue()).orElse(null);
+        User listUser = this.userRepository.findById(id).orElse(null);
 
         if(listUser == null){
             throw new UserNotExist();
@@ -309,5 +309,18 @@ public class UserService {
         usersResponseDTO.setCreation_date(listUser.getCreationdate());
 
         return usersResponseDTO;
+    }
+
+    public void updateRole(UpdateUserRoleRequestDTO roleRequestDTO){
+
+        User user = this.userRepository.findById(roleRequestDTO.id()).orElseThrow();
+
+        if(roleRequestDTO.role().equals(UserRole.USER.getRole())){
+            user.setRole(UserRole.USER);
+        }else{
+            user.setRole(UserRole.ADMIN);
+        }
+
+        this.userRepository.save(user);
     }
 }
