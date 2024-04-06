@@ -136,7 +136,7 @@ public class UserController {
     }
 
     @PutMapping("/update/user/role")
-    public ResponseEntity updateUserRole(@RequestBody @Valid UpdateUserRoleRequestDTO roleRequestDTO){
+    public ResponseEntity updateUserRole(@RequestBody UpdateUserRoleRequestDTO roleRequestDTO){
 
         this.userService.updateRole(roleRequestDTO);
 
