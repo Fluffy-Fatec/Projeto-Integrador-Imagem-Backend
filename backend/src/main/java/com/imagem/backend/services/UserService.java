@@ -313,11 +313,15 @@ public class UserService {
 
     public void updateRole(UpdateUserRoleRequestDTO roleRequestDTO){
 
+        log.info("Buscando pelo id do usuario...");
         User user = this.userRepository.findById(roleRequestDTO.id()).orElseThrow();
 
+        log.info("Verifica a nova role do usuario...");
         if(roleRequestDTO.role().equals(UserRole.USER.getRole())){
+            log.info("Nova role de user do usuario...");
             user.setRole(UserRole.USER);
         }else{
+            log.info("Nova role de admin do usuario...");
             user.setRole(UserRole.ADMIN);
         }
 
