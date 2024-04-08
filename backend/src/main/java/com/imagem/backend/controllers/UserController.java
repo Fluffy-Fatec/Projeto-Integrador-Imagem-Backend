@@ -151,4 +151,12 @@ public class UserController {
         return ResponseEntity.ok().body(new GlobalResponseDTO("Atualizacao de acesso realizada"));
     }
 
+    @GetMapping("/list/user/logged")
+    public ResponseEntity<UpdateUserRequestDTO> listUser(){
+
+        UpdateUserRequestDTO updateUserRequestDTO = this.userService.userLogged();
+
+        return ResponseEntity.ok().body(updateUserRequestDTO);
+    }
+
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.postgis.jdbc.geometry.Point;
 
 import java.sql.Timestamp;
 
@@ -37,11 +38,8 @@ public class Review {
     @Column(name = "product_id")
     private String productId;
 
-    @Column(name = "geolocation_lat")
-    private Double geolocationLat;
-
-    @Column(name = "geolocation_lng")
-    private Double geolocationLng;
+    @Column(name = "geolocation")
+    private Point geolocation;
 
     @Column(name = "sentiment")
     private String sentiment;

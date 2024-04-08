@@ -348,4 +348,16 @@ public class UserService {
 
         this.userRepository.save(user);
     }
+
+    public UpdateUserRequestDTO userLogged(){
+        log.info("Buscando os dados do usuário logado...");
+        User userLogged = userSession.userLogged();
+        return new UpdateUserRequestDTO(
+                userLogged.getUsername(),
+                userLogged.getEmail(),
+                userLogged.getNome(),
+                userLogged.getCelular(),
+                userLogged.getCpf()
+        );
+    }
 }
