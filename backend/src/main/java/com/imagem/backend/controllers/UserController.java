@@ -1,6 +1,7 @@
 package com.imagem.backend.controllers;
 
 
+import com.imagem.backend.domain.ENUM.UserRole;
 import com.imagem.backend.domain.FieldChange;
 import com.imagem.backend.domain.User;
 import com.imagem.backend.dtos.*;
@@ -134,12 +135,20 @@ public class UserController {
         return ResponseEntity.ok().body(listUsersResponseDTO);
     }
 
+
     @DeleteMapping("/delete/user/{id}")
-    public ResponseEntity daleteUser(@PathVariable("id") Integer id){
+    public ResponseEntity daleteUser(@PathVariable("id") Integer id) {
 
         this.userService.deleteUser(id);
-
         return ResponseEntity.ok().body(new GlobalResponseDTO("Usuário deletado"));
+    }
+
+    @PutMapping("/update/user/role")
+    public ResponseEntity updateUserRole(@RequestBody UpdateUserRoleRequestDTO roleRequestDTO){
+
+        this.userService.updateRole(roleRequestDTO);
+
+        return ResponseEntity.ok().body(new GlobalResponseDTO("Atualizacao de acesso realizada"));
     }
 
 }

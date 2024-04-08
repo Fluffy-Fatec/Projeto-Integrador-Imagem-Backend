@@ -16,35 +16,36 @@ public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @Column(name = "review_id")
+    private String id;
 
-    @Column(length = 255, nullable = false)
-    private String review;
+    @Column(name = "review_score")
+    private String reviewScore;
 
-    @Column(length = 255, nullable = true)
-    private String comentario;
+    @Column(name = "review_comment_title")
+    private String reviewCommentTitle;
 
-    @Column(length = 255, nullable = true)
-    private String sentimento;
+    @Column(name = "review_comment_message")
+    private String reviewCommentMessage;
 
-    @Column(name = "titulo", length = 255, nullable = false)
-    private String titulo;
+    @Column(name = "review_creation_date")
+    private Timestamp reviewCreationDate;
 
-    @Column(length = 255, nullable = true)
-    private String estado;
+    @Column(name = "review_answer_timestamp")
+    private Timestamp reviewAnswerTimestamp;
 
-    @Column(length = 255, nullable = true)
-    private String cidade;
+    @Column(name = "product_id")
+    private String productId;
 
-    @Column(length = 255, nullable = true)
-    private String rua;
+    @Column(name = "geolocation_lat")
+    private Double geolocationLat;
 
-    @Column(nullable = true)
-    private Double lat;
+    @Column(name = "geolocation_lng")
+    private Double geolocationLng;
 
-    @Column(nullable = true)
-    private Double lon;
+    @Column(name = "sentiment")
+    private String sentiment;
 
-    @Column(name = "creationDate", nullable = false, insertable = false)
-    private Timestamp creationDate;
+    @Column(name = "creationdate", nullable = false, insertable = false, updatable = false)
+    private Timestamp creationdate;
 }

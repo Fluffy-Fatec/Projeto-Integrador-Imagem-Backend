@@ -90,7 +90,7 @@ public class UserService {
         newUser.setPassword(encryptedPassword);
         newUser.setCpf(dto.cpf());
         newUser.setNome(dto.nome());
-        newUser.setEmail("emailteste@gmail.com");
+        newUser.setEmail("emailteste109@gmail.com");
         newUser.setCelular(dto.celular());
 
         this.userRepository.save(newUser);
@@ -120,7 +120,7 @@ public class UserService {
         User userLogged = userSession.userLogged();
 
         log.info("Buscando o usuário logado na base...");
-        User user = userRepository.findById(Long.valueOf(userLogged.getId())).orElseThrow();
+        User user = userRepository.findById(userLogged.getId()).orElseThrow();
 
         log.info("Verificando a role do usuario...");
         if(user.getRole() == UserRole.ADMIN) {
@@ -212,60 +212,59 @@ public class UserService {
 
         List<RespondeListFieldChangeDTO> listUpdateFieldChange = new ArrayList<>();
 
-        for (FieldChange fieldChange: listFieldChanges){
+        for (FieldChange fieldChange: listFieldChanges) {
+            if (fieldChange.getUser() != null) {
 
-            log.info("Setando o retorno do usuario...");
-            UserFieldChangeResponseDTO userFieldChangeResponseDTO = new UserFieldChangeResponseDTO(
-                    fieldChange.getUser().getId(),
-                    fieldChange.getUser().getUsername(),
-                    fieldChange.getUser().getNome(),
-                    fieldChange.getUser().getEmail(),
-                    fieldChange.getUser().getCelular(),
-                    fieldChange.getUser().getCpf()
+                log.info("Setando o retorno do usuario...");
+                UserFieldChangeResponseDTO userFieldChangeResponseDTO = new UserFieldChangeResponseDTO(
+                        fieldChange.getUser().getId(),
+                        fieldChange.getUser().getUsername(),
+                        fieldChange.getUser().getNome(),
+                        fieldChange.getUser().getEmail(),
+                        fieldChange.getUser().getCelular(),
+                        fieldChange.getUser().getCpf()
 
-            );
-            log.info("Setando o retorno do adm...");
+                );
+                log.info("Setando o retorno do adm...");
 
-            UserFieldChangeResponseDTO adminFieldChangeResponseDTO;
+                UserFieldChangeResponseDTO adminFieldChangeResponseDTO;
 
-            if(fieldChange.getStatus().equals(StatusFieldChange.PENDENTE)){
-                UserFieldChangeResponseDTO adminnFieldChangeResponseDTO = new UserFieldChangeResponseDTO(
-                        fieldChange.getAdmin().getId(),
-                        fieldChange.getAdmin().getUsername(),
-                        fieldChange.getAdmin().getNome(),
-                        fieldChange.getAdmin().getEmail(),
-                        fieldChange.getAdmin().getCelular(),
-                        fieldChange.getAdmin().getCpf()
+                if (fieldChange.getStatus().equals(StatusFieldChange.PENDENTE)) {
+                    UserFieldChangeResponseDTO adminnFieldChangeResponseDTO = new UserFieldChangeResponseDTO(
+                            fieldChange.getAdmin().getId(),
+                            fieldChange.getAdmin().getUsername(),
+                            fieldChange.getAdmin().getNome(),
+                            fieldChange.getAdmin().getEmail(),
+                            fieldChange.getAdmin().getCelular(),
+                            fieldChange.getAdmin().getCpf()
+                    );
+
+                    adminFieldChangeResponseDTO = adminnFieldChangeResponseDTO;
+
+                } else {
+                    adminFieldChangeResponseDTO = null;
+
+                }
+                log.info("Setando o retorno do da solicitacao...");
+
+                RespondeListFieldChangeDTO fieldChangeDTO = new RespondeListFieldChangeDTO(
+                        fieldChange.getId(),
+                        adminFieldChangeResponseDTO,
+                        userFieldChangeResponseDTO,
+                        fieldChange.getNovousername(),
+                        fieldChange.getNovonome(),
+                        fieldChange.getNovoemail(),
+                        fieldChange.getNovocelular(),
+                        fieldChange.getNovocpf(),
+                        fieldChange.getStatus(),
+                        fieldChange.getDataAprovacao(),
+                        fieldChange.getDataRejeicao()
                 );
 
-                adminFieldChangeResponseDTO = adminnFieldChangeResponseDTO;
-
-            }else {
-                adminFieldChangeResponseDTO = null;
-
+                log.info("Adicionando na lilsta de retorno...");
+                listUpdateFieldChange.add(fieldChangeDTO);
             }
-            log.info("Setando o retorno do da solicitacao...");
-
-            RespondeListFieldChangeDTO fieldChangeDTO = new RespondeListFieldChangeDTO(
-                    fieldChange.getId(),
-                    adminFieldChangeResponseDTO,
-                    userFieldChangeResponseDTO,
-                    fieldChange.getNovousername(),
-                    fieldChange.getNovonome(),
-                    fieldChange.getNovoemail(),
-                    fieldChange.getNovocelular(),
-                    fieldChange.getNovocpf(),
-                    fieldChange.getStatus(),
-                    fieldChange.getDataAprovacao(),
-                    fieldChange.getDataRejeicao()
-            );
-
-            log.info("Adicionando na lilsta de retorno...");
-            listUpdateFieldChange.add(fieldChangeDTO);
-
         }
-
-
 
         return listUpdateFieldChange;
     }
@@ -294,7 +293,7 @@ public class UserService {
     public ListUsersResponseDTO listUser(Integer id){
 
         log.info("Buscando pelo id do usuario...");
-        User listUser = this.userRepository.findById(id.longValue()).orElse(null);
+        User listUser = this.userRepository.findById(id).orElse(null);
 
         if(listUser == null){
             throw new UserNotExist();
@@ -314,17 +313,39 @@ public class UserService {
     public void deleteUser(Integer id){
 
         log.info("Buscando pelo id do usuario...");
-        User user = this.userRepository.findById(id.longValue()).orElse(null);
+        User user = this.userRepository.findById(id).orElse(null);
 
         if(user == null){
             throw new UserNotAuthenticated();
         }
 
-        user.setUserField(null);
-        user.setInvites(null);
-        this.userRepository.save(user);
+        List<FieldChange> listFieldChange = user.getUserField();
+
+        if(listFieldChange != null){
+            for(FieldChange fieldChange: listFieldChange){
+                fieldChange.setUser(null);
+                fieldChangeRepository.saveAndFlush(fieldChange);
+            }
+        }
 
         this.userRepository.delete(user);
+    }
 
+
+    public void updateRole(UpdateUserRoleRequestDTO roleRequestDTO){
+
+        log.info("Buscando pelo id do usuario...");
+        User user = this.userRepository.findById(roleRequestDTO.id()).orElseThrow();
+
+        log.info("Verifica a nova role do usuario...");
+        if(roleRequestDTO.role().equals(UserRole.USER.getRole())){
+            log.info("Nova role de user do usuario...");
+            user.setRole(UserRole.USER);
+        }else{
+            log.info("Nova role de admin do usuario...");
+            user.setRole(UserRole.ADMIN);
+        }
+
+        this.userRepository.save(user);
     }
 }
