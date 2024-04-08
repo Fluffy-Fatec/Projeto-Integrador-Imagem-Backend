@@ -135,6 +135,14 @@ public class UserController {
         return ResponseEntity.ok().body(listUsersResponseDTO);
     }
 
+
+    @DeleteMapping("/delete/user/{id}")
+    public ResponseEntity daleteUser(@PathVariable("id") Integer id) {
+
+        this.userService.deleteUser(id);
+        return ResponseEntity.ok().body(new GlobalResponseDTO("Usuário deletado"));
+    }
+
     @PutMapping("/update/user/role")
     public ResponseEntity updateUserRole(@RequestBody UpdateUserRoleRequestDTO roleRequestDTO){
 
@@ -144,4 +152,3 @@ public class UserController {
     }
 
 }
-
