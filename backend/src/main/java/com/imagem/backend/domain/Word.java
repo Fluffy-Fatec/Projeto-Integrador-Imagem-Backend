@@ -20,7 +20,7 @@ public class Word {
     @Column(name = "word")
     private String word;
 
-    @Column(name = "count")
+    @Column(name = "counts")
     private String count;
 
     @Column(name = "sentiment")
