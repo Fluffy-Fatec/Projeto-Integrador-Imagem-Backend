@@ -19,6 +19,7 @@ public class GraphicsService {
     }
 
     public List<Review> listReview(){
+        log.info("Buscando os registros de review...");
         return reviewRepository.findAll();
     }
 }

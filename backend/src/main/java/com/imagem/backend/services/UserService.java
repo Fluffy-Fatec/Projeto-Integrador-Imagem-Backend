@@ -315,6 +315,7 @@ public class UserService {
         log.info("Buscando pelo id do usuario...");
         User user = this.userRepository.findById(id).orElse(null);
 
+        log.info("Buscando os registros de review...");
         if(user == null){
             throw new UserNotAuthenticated();
         }
@@ -347,5 +348,17 @@ public class UserService {
         }
 
         this.userRepository.save(user);
+    }
+
+    public UpdateUserRequestDTO userLogged(){
+        log.info("Buscando os dados do usuário logado...");
+        User userLogged = userSession.userLogged();
+        return new UpdateUserRequestDTO(
+                userLogged.getUsername(),
+                userLogged.getEmail(),
+                userLogged.getNome(),
+                userLogged.getCelular(),
+                userLogged.getCpf()
+        );
     }
 }
