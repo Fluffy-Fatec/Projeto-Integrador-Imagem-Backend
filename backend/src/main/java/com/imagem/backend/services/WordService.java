@@ -20,6 +20,7 @@ public class WordService {
 
 
     public List<Word> listAllWords(){
+        log.info("Buscando os registros de palavras...");
         return this.wordRepository.findAll();
     }
 }

@@ -5,11 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-//Tipos do point
-import org.springframework.data.geo.Point;
-//import java.awt.*;
-//import net.postgis.jdbc.geometry.Point;
-
 import java.sql.Timestamp;
 
 @Entity

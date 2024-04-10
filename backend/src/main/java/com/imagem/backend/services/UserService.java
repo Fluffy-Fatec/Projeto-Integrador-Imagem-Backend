@@ -315,6 +315,7 @@ public class UserService {
         log.info("Buscando pelo id do usuario...");
         User user = this.userRepository.findById(id).orElse(null);
 
+        log.info("Buscando os registros de review...");
         if(user == null){
             throw new UserNotAuthenticated();
         }
