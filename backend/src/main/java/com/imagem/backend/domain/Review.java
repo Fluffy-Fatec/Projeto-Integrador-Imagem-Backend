@@ -25,7 +25,7 @@ public class Review {
     @Column(name = "review_score")
     private String reviewScore;
 
-    @Column(name = "sentimento_predito")
+    @Column(name = "predictions")
     private String sentimentoPredito;
 
     @Column(name = "geolocation_lat")
