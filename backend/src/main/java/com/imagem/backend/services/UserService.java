@@ -79,22 +79,22 @@ public class UserService {
     }
 
 
-    // Metodo simples para gerar usuario pela primeira , apagar quando for subir para main
-    public void saveAdm(RegisterDTO dto) {
-
-        String encryptedPassword = new BCryptPasswordEncoder().encode(dto.password());
-
-        User newUser = new User();
-        newUser.setUsername(dto.username());
-        newUser.setRole(UserRole.ADMIN);
-        newUser.setPassword(encryptedPassword);
-        newUser.setCpf(dto.cpf());
-        newUser.setNome(dto.nome());
-        newUser.setEmail("emailteste109@gmail.com");
-        newUser.setCelular(dto.celular());
-
-        this.userRepository.save(newUser);
-    }
+//    // Metodo simples para gerar usuario pela primeira , apagar quando for subir para main
+//    public void saveAdm(RegisterDTO dto) {
+//
+//        String encryptedPassword = new BCryptPasswordEncoder().encode(dto.password());
+//
+//        User newUser = new User();
+//        newUser.setUsername(dto.username());
+//        newUser.setRole(UserRole.ADMIN);
+//        newUser.setPassword(encryptedPassword);
+//        newUser.setCpf(dto.cpf());
+//        newUser.setNome(dto.nome());
+//        newUser.setEmail("emailteste109@gmail.com");
+//        newUser.setCelular(dto.celular());
+//
+//        this.userRepository.save(newUser);
+//    }
 
     public void updpatePassUser(UpdatePassRequestDTO updatePassRequestDTO){
         log.info("Buscando os dados do usuário logado...");
