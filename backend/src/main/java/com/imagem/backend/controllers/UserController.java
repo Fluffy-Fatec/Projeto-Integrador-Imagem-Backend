@@ -63,12 +63,12 @@ public class UserController {
     }
 
     // Metodo simples para gerar usuario pela primeira , apagar quando for subir para main
-    @PostMapping("/register/adm")
-    public ResponseEntity<GlobalResponseDTO> registerAdm(@RequestBody @Valid RegisterDTO data){
-        this.userService.saveAdm(data);
-
-        return ResponseEntity.ok().body(new GlobalResponseDTO("conta criada com sucesso"));
-    }
+//    @PostMapping("/register/adm")
+//    public ResponseEntity<GlobalResponseDTO> registerAdm(@RequestBody @Valid RegisterDTO data){
+//        this.userService.saveAdm(data);
+//
+//        return ResponseEntity.ok().body(new GlobalResponseDTO("conta criada com sucesso"));
+//    }
 
     @PostMapping("/invite")
     public ResponseEntity<GlobalResponseDTO> inviteUser(@RequestBody @Valid SendInviteRequestDTO sendInviteRequestDTO){
