@@ -75,7 +75,7 @@ public class UserService {
         this.userRepository.save(newUser);
 
         log.info("Deletando o convite utilizado pelo usuário...");
-        this.inviteRepository.delete(invite);
+        // this.inviteRepository.delete(invite);
     }
 
 
