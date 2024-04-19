@@ -16,6 +16,8 @@ import java.util.regex.Pattern;
 public class UserServiceValidator {
 
 
+
+
     public void apply(RegisterDTO dto){
         this.validCelphone(dto.celular());
         this.validCpf(dto.cpf());

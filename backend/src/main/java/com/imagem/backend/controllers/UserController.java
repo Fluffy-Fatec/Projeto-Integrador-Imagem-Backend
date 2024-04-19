@@ -45,7 +45,9 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid AuthenticationDTO data){
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.username(), data.password());
+
         var auth = this.authenticationManager.authenticate(usernamePassword);
+
 
         LoginResponseDTO token = tokenService.generateToken((User) auth.getPrincipal());
 
@@ -61,14 +63,6 @@ public class UserController {
 
         return ResponseEntity.ok().body(new GlobalResponseDTO("conta criada com sucesso"));
     }
-
-    // Metodo simples para gerar usuario pela primeira , apagar quando for subir para main
-//    @PostMapping("/register/adm")
-//    public ResponseEntity<GlobalResponseDTO> registerAdm(@RequestBody @Valid RegisterDTO data){
-//        this.userService.saveAdm(data);
-//
-//        return ResponseEntity.ok().body(new GlobalResponseDTO("conta criada com sucesso"));
-//    }
 
     @PostMapping("/invite")
     public ResponseEntity<GlobalResponseDTO> inviteUser(@RequestBody @Valid SendInviteRequestDTO sendInviteRequestDTO){
