@@ -44,6 +44,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/auth/user/logged").hasRole("USER")
                         .requestMatchers(HttpMethod.GET, "/auth/delete/user/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/graphics/list").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/graphics/listByDateRange").permitAll()
                         .requestMatchers(HttpMethod.GET, "/graphics/word").hasRole("USER")
                         .anyRequest()
                         .authenticated()
