@@ -9,12 +9,12 @@ import java.util.List;
 @Service
 public class AcceptTermValidator {
 
-    public void acceptTermTrue(User user){
-        List<StatusTerm> listStatusTerm = user.getStatusTerm();
-
-        for(StatusTerm statusTerm: listStatusTerm){
-            statusTerm.get
-        }
-
-    }
+//    public void acceptTermTrue(User user){
+//        List<StatusTermService> listStatusTerm = user.getStatusTerm();
+//
+//        for(StatusTermService statusTerm: listStatusTerm){
+//            statusTerm.get
+//        }
+//
+//    }
 }

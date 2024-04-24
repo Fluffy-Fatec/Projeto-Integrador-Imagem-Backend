@@ -5,11 +5,16 @@ import com.imagem.backend.domain.Word;
 import com.imagem.backend.services.GraphicsService;
 import com.imagem.backend.services.WordService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
+
+
+import java.util.Date;
+
 
 @RestController
 @RequestMapping("/graphics")
@@ -32,6 +37,38 @@ public class ReviewController {
         return ResponseEntity.ok().body(reviewList);
     }
 
+    @GetMapping("/listByDateRange")
+    public ResponseEntity<List<Review>> listReviewByDateRange(
+            @RequestParam("startDate") String startDateString,
+            @RequestParam("endDate") String endDateString,
+            @RequestParam(value = "sentimentoPredito", required = false) String sentimentoPredito) {
+        Timestamp startTimestamp = parseDateStringToTimestamp(startDateString);
+        Timestamp endTimestamp = parseDateStringToTimestamp(endDateString);
+
+        if (startTimestamp == null || endTimestamp == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<Review> reviewList;
+        if (sentimentoPredito != null) {
+            reviewList = graphicsService.listReviewByDateRangeAndSentiment(startTimestamp, endTimestamp, sentimentoPredito);
+        } else {
+            reviewList = graphicsService.listReviewByDateRange(startTimestamp, endTimestamp);
+        }
+        return ResponseEntity.ok().body(reviewList);
+    }
+
+    private Timestamp parseDateStringToTimestamp(String dateString) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        try {
+            Date date = dateFormat.parse(dateString);
+            return new Timestamp(date.getTime());
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     @GetMapping("/word")
     public ResponseEntity<List<Word>> listWords(){
 
@@ -40,3 +77,5 @@ public class ReviewController {
         return ResponseEntity.ok().body(words);
     }
 }
+
+

@@ -22,7 +22,7 @@ public class Term {
     private String termo;
     private String versao;
     private boolean atualVersao;
-    private LocalDateTime creationDate;
+    private LocalDateTime creationdate;
 
 }
 

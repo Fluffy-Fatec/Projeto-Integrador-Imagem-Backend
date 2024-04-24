@@ -24,13 +24,13 @@ public class StatusTerm {
     private Term termo;
 
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "iduser")
     private User user;
 
     private String status;
 
-    private LocalDateTime dataAprovacao;
+    private LocalDateTime dataaprovacao;
 
-    private LocalDateTime creationDate;
+    private LocalDateTime creationdate;
 
 }

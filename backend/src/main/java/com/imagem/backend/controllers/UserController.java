@@ -7,6 +7,7 @@ import com.imagem.backend.domain.User;
 import com.imagem.backend.dtos.*;
 import com.imagem.backend.infra.security.TokenService;
 import com.imagem.backend.services.EmailServiceSender;
+import com.imagem.backend.services.StatusTermService;
 import com.imagem.backend.services.UserService;
 import com.imagem.backend.utils.GmailValidator;
 import com.imagem.backend.validators.UserServiceValidator;
@@ -33,12 +34,15 @@ public class UserController {
 
     private final EmailServiceSender emailServiceSender;
 
-    public UserController(AuthenticationManager authenticationManager, UserService userService, TokenService tokenService, UserServiceValidator userServiceValidator, EmailServiceSender emailServiceSender) {
+    private final StatusTermService statusTermService;
+
+    public UserController(AuthenticationManager authenticationManager, UserService userService, TokenService tokenService, UserServiceValidator userServiceValidator, EmailServiceSender emailServiceSender, StatusTermService statusTermService) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.tokenService = tokenService;
         this.userServiceValidator = userServiceValidator;
         this.emailServiceSender = emailServiceSender;
+        this.statusTermService = statusTermService;
     }
 
 
@@ -48,7 +52,7 @@ public class UserController {
 
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
-
+        this.statusTermService.verifyTermAccepted(data.username());
         LoginResponseDTO token = tokenService.generateToken((User) auth.getPrincipal());
 
         return ResponseEntity.ok(token);
