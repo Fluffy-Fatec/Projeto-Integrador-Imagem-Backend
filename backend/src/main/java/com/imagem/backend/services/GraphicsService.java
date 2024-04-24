@@ -32,5 +32,9 @@ public class GraphicsService {
     public List<Review> listReviewByDateRange(Timestamp startDate, Timestamp endDate) {
         return reviewRepository.findByReviewCreationDateBetween(startDate, endDate);
     }
+
+    public List<Review> listReviewByDateRangeAndSentiment(Timestamp startTimestamp, Timestamp endTimestamp, String sentimentoPredito) {
+        return reviewRepository.findByReviewCreationDateBetweenAndSentimentoPredito(startTimestamp, endTimestamp, sentimentoPredito);
+    }
 }
 

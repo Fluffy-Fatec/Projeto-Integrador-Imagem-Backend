@@ -10,5 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
 	List<Review> findByReviewCreationDateBetween(Timestamp startDate, Timestamp endDate);
-	
+
+	List<Review> findByReviewCreationDateBetweenAndSentimentoPredito(Timestamp startDate, Timestamp endDate, String sentimentoPredito);
+
 }

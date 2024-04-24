@@ -40,20 +40,32 @@ public class ReviewController {
     @GetMapping("/listByDateRange")
     public ResponseEntity<List<Review>> listReviewByDateRange(
             @RequestParam("startDate") String startDateString,
-            @RequestParam("endDate") String endDateString) {
+            @RequestParam("endDate") String endDateString,
+            @RequestParam(value = "sentimentoPredito", required = false) String sentimentoPredito) {
+        Timestamp startTimestamp = parseDateStringToTimestamp(startDateString);
+        Timestamp endTimestamp = parseDateStringToTimestamp(endDateString);
+
+        if (startTimestamp == null || endTimestamp == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<Review> reviewList;
+        if (sentimentoPredito != null) {
+            reviewList = graphicsService.listReviewByDateRangeAndSentiment(startTimestamp, endTimestamp, sentimentoPredito);
+        } else {
+            reviewList = graphicsService.listReviewByDateRange(startTimestamp, endTimestamp);
+        }
+        return ResponseEntity.ok().body(reviewList);
+    }
+
+    private Timestamp parseDateStringToTimestamp(String dateString) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         try {
-            Date startDate = dateFormat.parse(startDateString);
-            Date endDate = dateFormat.parse(endDateString);
-
-            Timestamp startTimestamp = new Timestamp(startDate.getTime());
-            Timestamp endTimestamp = new Timestamp(endDate.getTime());
-
-            List<Review> reviewList = graphicsService.listReviewByDateRange(startTimestamp, endTimestamp);
-            return ResponseEntity.ok().body(reviewList);
+            Date date = dateFormat.parse(dateString);
+            return new Timestamp(date.getTime());
         } catch (ParseException e) {
             e.printStackTrace();
-            return ResponseEntity.badRequest().build();
+            return null;
         }
     }
 
