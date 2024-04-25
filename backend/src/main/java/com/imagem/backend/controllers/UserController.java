@@ -58,6 +58,12 @@ public class UserController {
         return ResponseEntity.ok(token);
     }
 
+    @PostMapping("/user/term")
+    public ResponseEntity termAccept(@RequestBody TermAcceptedDTO termAcceptedDTO) {
+        this.statusTermService.termAccept(termAcceptedDTO);
+        return ResponseEntity.ok().body(new GlobalResponseDTO("Termo atualizado com sucesso!"));
+    }
+
     @PostMapping("/register/{id}")
     public ResponseEntity<GlobalResponseDTO> register(@PathVariable("id") UUID tokenAlphanumeric,
                                                         @RequestBody @Valid RegisterDTO data){

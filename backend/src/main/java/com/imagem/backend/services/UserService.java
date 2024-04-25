@@ -1,10 +1,8 @@
 package com.imagem.backend.services;
 
+import com.imagem.backend.domain.*;
 import com.imagem.backend.domain.ENUM.StatusFieldChange;
 import com.imagem.backend.domain.ENUM.UserRole;
-import com.imagem.backend.domain.FieldChange;
-import com.imagem.backend.domain.Invite;
-import com.imagem.backend.domain.User;
 import com.imagem.backend.dtos.*;
 import com.imagem.backend.exceptions.NotInvited;
 import com.imagem.backend.exceptions.UserAlreadyExistException;
