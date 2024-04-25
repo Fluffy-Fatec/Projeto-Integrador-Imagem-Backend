@@ -39,6 +39,7 @@ public class UserService {
     private final UserSession userSession;
 
     private final FieldChangeRepository fieldChangeRepository;
+
     public UserService(UserRepository userRepository, InviteRepository inviteRepository, UserSession userSession, FieldChangeRepository fieldChangeRepository) {
         this.userRepository = userRepository;
         this.inviteRepository = inviteRepository;
@@ -77,24 +78,6 @@ public class UserService {
         log.info("Deletando o convite utilizado pelo usuário...");
         // this.inviteRepository.delete(invite);
     }
-
-
-//    // Metodo simples para gerar usuario pela primeira , apagar quando for subir para main
-//    public void saveAdm(RegisterDTO dto) {
-//
-//        String encryptedPassword = new BCryptPasswordEncoder().encode(dto.password());
-//
-//        User newUser = new User();
-//        newUser.setUsername(dto.username());
-//        newUser.setRole(UserRole.ADMIN);
-//        newUser.setPassword(encryptedPassword);
-//        newUser.setCpf(dto.cpf());
-//        newUser.setNome(dto.nome());
-//        newUser.setEmail("emailteste109@gmail.com");
-//        newUser.setCelular(dto.celular());
-//
-//        this.userRepository.save(newUser);
-//    }
 
     public void updpatePassUser(UpdatePassRequestDTO updatePassRequestDTO){
         log.info("Buscando os dados do usuário logado...");

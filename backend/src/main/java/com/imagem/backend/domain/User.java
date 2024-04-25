@@ -55,9 +55,11 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<FieldChange> userField;
 
-
     @OneToMany(mappedBy = "admin")
     private List<FieldChange> adminField;
+
+    @OneToMany(mappedBy = "user")
+    private List<StatusTerm> statusTerm;
 
     public User(String login, String password, UserRole role){
         this.username = login;
