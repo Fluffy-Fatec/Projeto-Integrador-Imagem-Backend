@@ -67,4 +67,8 @@ public class StatusTermService {
             this.statusTermoRepository.save(statusTerm);
         }
     }
+
+    public Term termActual(){
+        return this.termRepository.findByAtualVersao(true);
+    }
 }
