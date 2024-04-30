@@ -11,6 +11,7 @@ import com.imagem.backend.exceptions.UserNotExist;
 import com.imagem.backend.infra.security.UserSession;
 import com.imagem.backend.repositories.FieldChangeRepository;
 import com.imagem.backend.repositories.InviteRepository;
+import com.imagem.backend.repositories.NotificationRepository;
 import com.imagem.backend.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,11 +39,14 @@ public class UserService {
 
     private final FieldChangeRepository fieldChangeRepository;
 
-    public UserService(UserRepository userRepository, InviteRepository inviteRepository, UserSession userSession, FieldChangeRepository fieldChangeRepository) {
+    private final NotificationRepository notificationRepository;
+
+    public UserService(UserRepository userRepository, InviteRepository inviteRepository, UserSession userSession, FieldChangeRepository fieldChangeRepository, NotificationRepository notificationRepository) {
         this.userRepository = userRepository;
         this.inviteRepository = inviteRepository;
         this.userSession = userSession;
         this.fieldChangeRepository = fieldChangeRepository;
+        this.notificationRepository = notificationRepository;
     }
 
 
@@ -341,5 +345,38 @@ public class UserService {
                 userLogged.getCelular(),
                 userLogged.getCpf()
         );
+    }
+
+    public List<ResponseNotificationDTO> notificationFieldChange(){
+        log.info("Buscando usuário Logado...");
+        User userLogged = userSession.userLogged();
+
+        List<ResponseNotificationDTO> responseNotificationDTO = new ArrayList<>();
+
+        log.info("Verificando a role do usuário...");
+        if(userLogged.getRole().equals(UserRole.USER)){
+            List<Notification> notifications = this.notificationRepository.findByUserAndTipoNotificacao(userLogged, "Usuario");
+
+            for(Notification notification: notifications){
+                ResponseNotificationDTO responseNotification = new ResponseNotificationDTO();
+                responseNotification.setId(notification.getId());
+                responseNotification.setMensagem(notification.getMensagem());
+                responseNotification.setFlag_notificacao(notification.getFlagNotificacao());
+                responseNotification.setTipo_notificacao(notification.getTipoNotificacao());
+                responseNotificationDTO.add(responseNotification);
+            }
+
+        }else {
+            List<Notification> notifications = this.notificationRepository.findByTipoNotificacao("Admin ");
+            for(Notification notification: notifications){
+                ResponseNotificationDTO responseNotification = new ResponseNotificationDTO();
+                responseNotification.setId(notification.getId());
+                responseNotification.setMensagem(notification.getMensagem());
+                responseNotification.setFlag_notificacao(notification.getFlagNotificacao());
+                responseNotification.setTipo_notificacao(notification.getTipoNotificacao());
+                responseNotificationDTO.add(responseNotification);
+            }
+        }
+        return responseNotificationDTO;
     }
 }

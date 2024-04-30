@@ -19,43 +19,28 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_alteracao_campo", nullable = true)
     private FieldChange fieldChange;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idadmin", nullable = true)
     private User admin;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "iduser")
     private User user;
 
     @Column(length = 255, nullable = true)
-    private String tiponotificacao;
+    private String tipoNotificacao;
 
     @Column(length = 255, nullable = true)
-    private String novonome;
+    private String flagNotificacao;
 
     @Column(length = 255, nullable = true)
-    private String novoemail;
-
-    @Column(length = 255, nullable = true)
-    private String novocelular;
-
-    @Column(length = 255, nullable = true)
-    private String novocpf;
-
-    @Column(length = 255, nullable = true)
-    private String status;
-
-    @Column(name = "dataaprovacao", nullable = false)
-    private Timestamp dataAprovacao;
-
-    @Column(name = "datarejeicao", nullable = false)
-    private Timestamp dataRejeicao;
+    private String mensagem;
 
     @Column(nullable = false, insertable = false)
     private Timestamp creationdate;
