@@ -1,9 +1,6 @@
 package com.imagem.backend.controllers;
 
 
-import com.imagem.backend.domain.ENUM.UserRole;
-import com.imagem.backend.domain.FieldChange;
-import com.imagem.backend.domain.Notification;
 import com.imagem.backend.domain.User;
 import com.imagem.backend.dtos.*;
 import com.imagem.backend.infra.security.TokenService;
