@@ -1,5 +1,6 @@
 package com.imagem.backend.controllers;
 
+import com.imagem.backend.domain.NotificationTerm;
 import com.imagem.backend.domain.StatusTerm;
 import com.imagem.backend.domain.Term;
 import com.imagem.backend.services.StatusTermService;
@@ -24,4 +25,13 @@ public class TermController {
 
         return ResponseEntity.ok(term);
     }
+
+    @GetMapping("/notification")
+    public ResponseEntity<NotificationTerm> notificationTerm(){
+        NotificationTerm notification = this.statusTerm.notificationTerm();
+        return ResponseEntity.ok().body(notification);
+    }
+
+
+
 }

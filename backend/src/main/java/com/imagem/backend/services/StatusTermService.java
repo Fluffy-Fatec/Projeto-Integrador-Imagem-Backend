@@ -1,10 +1,10 @@
 package com.imagem.backend.services;
 
-import com.imagem.backend.domain.StatusTerm;
-import com.imagem.backend.domain.Term;
-import com.imagem.backend.domain.User;
+import com.imagem.backend.domain.*;
 import com.imagem.backend.dtos.TermAcceptedDTO;
 import com.imagem.backend.exceptions.TermNotAccepted;
+import com.imagem.backend.infra.security.UserSession;
+import com.imagem.backend.repositories.NotificationTermRepository;
 import com.imagem.backend.repositories.StatusTermoRepository;
 import com.imagem.backend.repositories.TermRepository;
 import com.imagem.backend.repositories.UserRepository;
@@ -21,12 +21,18 @@ public class StatusTermService {
 
     private final UserRepository userRepository;
 
+    private final NotificationTermRepository notificationTermRepository;
+
+    private final UserSession userSession;
+
 
     public StatusTermService(StatusTermoRepository statusTermoRepository, TermRepository termRepository,
-                             UserRepository userRepository) {
+                             UserRepository userRepository, NotificationTermRepository notificationTermRepository, UserSession userSession) {
         this.statusTermoRepository = statusTermoRepository;
         this.termRepository = termRepository;
         this.userRepository = userRepository;
+        this.notificationTermRepository = notificationTermRepository;
+        this.userSession = userSession;
     }
 
 
@@ -70,5 +76,10 @@ public class StatusTermService {
 
     public Term termActual(){
         return this.termRepository.findByAtualVersao(true);
+    }
+
+    public NotificationTerm notificationTerm(){
+        User user = this.userSession.userLogged();
+        return this.notificationTermRepository.findByUser(user);
     }
 }
