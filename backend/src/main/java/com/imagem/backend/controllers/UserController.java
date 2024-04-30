@@ -167,4 +167,14 @@ public class UserController {
 
         return ResponseEntity.ok().body(notification);
     }
+
+    @PutMapping("/notification/update/{id}")
+    public ResponseEntity updateNotificationFieldStatus(@PathVariable("id") Integer id){
+
+        System.out.println(id);
+
+        this.userService.updateNotificationField(id);
+
+        return ResponseEntity.ok().body(new GlobalResponseDTO("Atualizacao de acesso realizada"));
+    }
 }
