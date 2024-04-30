@@ -1,6 +1,7 @@
 package com.imagem.backend.services;
 
 import com.imagem.backend.domain.*;
+import com.imagem.backend.domain.ENUM.FlagNotificacaoEnum;
 import com.imagem.backend.domain.ENUM.StatusFieldChange;
 import com.imagem.backend.domain.ENUM.UserRole;
 import com.imagem.backend.dtos.*;
@@ -378,5 +379,13 @@ public class UserService {
             }
         }
         return responseNotificationDTO;
+    }
+
+    public void updateNotificationField(Integer id){
+        Notification notification = this.notificationRepository.findById(id).orElseThrow();
+
+        notification.setFlagNotificacao(FlagNotificacaoEnum.VIST.getStatus());
+
+        this.notificationRepository.save(notification);
     }
 }
