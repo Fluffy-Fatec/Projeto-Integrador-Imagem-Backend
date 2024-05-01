@@ -11,6 +11,13 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
 	List<Review> findByReviewCreationDateBetween(Timestamp startDate, Timestamp endDate);
 
-	List<Review> findByReviewCreationDateBetweenAndSentimentoPredito(Timestamp startDate, Timestamp endDate, String sentimentoPredito);
+	List<Review> findByGeolocationStateAndReviewCreationDateBetween(String state,Timestamp startDate, Timestamp endDate);
+
+	List<Review> findByReviewCreationDateBetweenAndSentimentoPredito(Timestamp startDate, Timestamp endDate,
+																	 String sentimentoPredito);
+	List<Review> findByReviewCreationDateBetweenAndSentimentoPreditoAndGeolocationState(Timestamp startDate,
+																					Timestamp endDate,
+																 					String sentimentoPredito,
+																					String state);
 
 }
