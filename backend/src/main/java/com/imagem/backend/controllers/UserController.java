@@ -1,8 +1,6 @@
 package com.imagem.backend.controllers;
 
 
-import com.imagem.backend.domain.ENUM.UserRole;
-import com.imagem.backend.domain.FieldChange;
 import com.imagem.backend.domain.User;
 import com.imagem.backend.dtos.*;
 import com.imagem.backend.infra.security.TokenService;
@@ -163,4 +161,20 @@ public class UserController {
         return ResponseEntity.ok().body(updateUserRequestDTO);
     }
 
+    @GetMapping("/field/notification")
+    public ResponseEntity<List<ResponseNotificationDTO>> notificationFieldChange(){
+        List<ResponseNotificationDTO> notification = this.userService.notificationFieldChange();
+
+        return ResponseEntity.ok().body(notification);
+    }
+
+    @PutMapping("/notification/update/{id}")
+    public ResponseEntity updateNotificationFieldStatus(@PathVariable("id") Integer id){
+
+        System.out.println(id);
+
+        this.userService.updateNotificationField(id);
+
+        return ResponseEntity.ok().body(new GlobalResponseDTO("Atualizacao de acesso realizada"));
+    }
 }
