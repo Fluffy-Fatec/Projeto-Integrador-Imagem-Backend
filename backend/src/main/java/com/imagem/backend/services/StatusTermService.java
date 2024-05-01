@@ -2,6 +2,7 @@ package com.imagem.backend.services;
 
 import com.imagem.backend.domain.*;
 import com.imagem.backend.dtos.TermAcceptedDTO;
+import com.imagem.backend.exceptions.FirstTimeTermAccepted;
 import com.imagem.backend.exceptions.TermNotAccepted;
 import com.imagem.backend.infra.security.UserSession;
 import com.imagem.backend.repositories.NotificationTermRepository;
@@ -10,6 +11,8 @@ import com.imagem.backend.repositories.TermRepository;
 import com.imagem.backend.repositories.UserRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @Log4j2
@@ -45,8 +48,9 @@ public class StatusTermService {
         StatusTerm statusTerm = this.statusTermoRepository.findByTermoAndUser(termo,user);
 
         log.info("Validacao do termo de aceite");
-        if(statusTerm == null || statusTerm.getStatus().equals("rejected")) {
-
+        if(statusTerm == null ){
+            throw new FirstTimeTermAccepted();
+        }else if(statusTerm.getStatus().equals("rejected")) {
             throw new TermNotAccepted();
         }
 
@@ -78,8 +82,15 @@ public class StatusTermService {
         return this.termRepository.findByAtualVersao(true);
     }
 
-    public NotificationTerm notificationTerm(){
+    public List<NotificationTerm> notificationTerm(){
         User user = this.userSession.userLogged();
         return this.notificationTermRepository.findByUser(user);
+    }
+
+    public void updateNotificationTerm(Integer id){
+        NotificationTerm notificationTerm = this.notificationTermRepository.findById(id).orElseThrow();
+        notificationTerm.setFlagNotificacao("read");
+
+        this.notificationTermRepository.save(notificationTerm);
     }
 }

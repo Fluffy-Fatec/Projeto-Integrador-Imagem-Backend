@@ -3,11 +3,12 @@ package com.imagem.backend.controllers;
 import com.imagem.backend.domain.NotificationTerm;
 import com.imagem.backend.domain.StatusTerm;
 import com.imagem.backend.domain.Term;
+import com.imagem.backend.dtos.GlobalResponseDTO;
 import com.imagem.backend.services.StatusTermService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/term")
@@ -27,11 +28,15 @@ public class TermController {
     }
 
     @GetMapping("/notification")
-    public ResponseEntity<NotificationTerm> notificationTerm(){
-        NotificationTerm notification = this.statusTerm.notificationTerm();
+    public ResponseEntity<List<NotificationTerm>> notificationTerm(){
+        List<NotificationTerm> notification = this.statusTerm.notificationTerm();
         return ResponseEntity.ok().body(notification);
     }
 
-
+    @PutMapping("/notification/update/{id}")
+    public ResponseEntity updateNotification(@PathVariable("id") Integer id){
+        this.statusTerm.updateNotificationTerm(id);
+        return ResponseEntity.ok().body(new GlobalResponseDTO("Atualizacao de acesso realizada"));
+    }
 
 }

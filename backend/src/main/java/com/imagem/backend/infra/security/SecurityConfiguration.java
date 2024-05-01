@@ -51,6 +51,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/auth/field/notification").hasRole("USER")
                         .requestMatchers(HttpMethod.PUT, "/auth/notification/update/**").hasRole("USER")
                         .requestMatchers(HttpMethod.GET, "/term/notification").hasRole("USER")
+                        .requestMatchers(HttpMethod.PUT, "/term/notification/update/**").hasRole("USER")
                         .anyRequest()
                         .authenticated()
                 )
