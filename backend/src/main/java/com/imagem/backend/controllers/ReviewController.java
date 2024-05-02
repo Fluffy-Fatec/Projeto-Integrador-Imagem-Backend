@@ -41,6 +41,7 @@ public class ReviewController {
     public ResponseEntity<List<Review>> listReviewByDateRange(
             @RequestParam("startDate") String startDateString,
             @RequestParam("endDate") String endDateString,
+            @RequestParam(value = "state", required = false) String state,
             @RequestParam(value = "sentimentoPredito", required = false) String sentimentoPredito) {
         Timestamp startTimestamp = parseDateStringToTimestamp(startDateString);
         Timestamp endTimestamp = parseDateStringToTimestamp(endDateString);
@@ -51,9 +52,18 @@ public class ReviewController {
 
         List<Review> reviewList;
         if (sentimentoPredito != null) {
-            reviewList = graphicsService.listReviewByDateRangeAndSentiment(startTimestamp, endTimestamp, sentimentoPredito);
-        } else {
-            reviewList = graphicsService.listReviewByDateRange(startTimestamp, endTimestamp);
+            if (state != null) {
+                reviewList = graphicsService.listReviewByDateRangeAndSentimentState(startTimestamp, endTimestamp, sentimentoPredito, state);
+            } else {
+                reviewList = graphicsService.listReviewByDateRangeAndSentiment(startTimestamp, endTimestamp, sentimentoPredito);
+            }
+        }else {
+            if (state != null) {
+                reviewList = graphicsService.listReviewByDateRangeState(startTimestamp, endTimestamp, state);
+            } else {
+                reviewList = graphicsService.listReviewByDateRange(startTimestamp, endTimestamp);
+            }
+
         }
         return ResponseEntity.ok().body(reviewList);
     }

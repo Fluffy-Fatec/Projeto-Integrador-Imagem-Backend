@@ -33,8 +33,17 @@ public class GraphicsService {
         return reviewRepository.findByReviewCreationDateBetween(startDate, endDate);
     }
 
+    public List<Review> listReviewByDateRangeState(Timestamp startDate, Timestamp endDate,String state) {
+        return reviewRepository.findByGeolocationStateAndReviewCreationDateBetween(state,startDate, endDate);
+    }
+
     public List<Review> listReviewByDateRangeAndSentiment(Timestamp startTimestamp, Timestamp endTimestamp, String sentimentoPredito) {
         return reviewRepository.findByReviewCreationDateBetweenAndSentimentoPredito(startTimestamp, endTimestamp, sentimentoPredito);
     }
+
+    public List<Review> listReviewByDateRangeAndSentimentState(Timestamp startTimestamp, Timestamp endTimestamp, String sentimentoPredito,String state) {
+        return reviewRepository.findByReviewCreationDateBetweenAndSentimentoPreditoAndGeolocationState(startTimestamp, endTimestamp, sentimentoPredito,state);
+    }
+
 }
 
