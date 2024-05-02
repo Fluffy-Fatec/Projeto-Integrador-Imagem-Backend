@@ -61,6 +61,12 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<StatusTerm> statusTerm;
 
+    @OneToMany(mappedBy = "user")
+    private List<Notification> notifications;
+
+    @OneToMany(mappedBy = "user")
+    private List<NotificationTerm> notificationTerms;
+
     public User(String login, String password, UserRole role){
         this.username = login;
         this.password = password;
