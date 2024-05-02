@@ -139,10 +139,10 @@ public class UserController {
 
 
     @DeleteMapping("/delete/user/{id}")
-    public ResponseEntity daleteUser(@PathVariable("id") Integer id,
-                                     @RequestBody DeleteDTO dto) {
+    public ResponseEntity daleteUser(@PathVariable("id") Integer id){
+//                                     @RequestBody DeleteDTO dto)
 
-        this.userService.deleteUser(id,dto);
+        this.userService.deleteUser(id);
         return ResponseEntity.ok().body(new GlobalResponseDTO("Usuário deletado"));
     }
 

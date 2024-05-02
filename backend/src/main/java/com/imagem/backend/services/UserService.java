@@ -305,7 +305,7 @@ public class UserService {
 
         return usersResponseDTO;
     }
-    public void deleteUser(Integer id, DeleteDTO dto){
+    public void deleteUser(Integer id){
 
         log.info("Buscando pelo id do usuario...");
         User user = this.userRepository.findById(id).orElse(null);
@@ -354,9 +354,9 @@ public class UserService {
 
         this.userRepository.delete(user);
 
-        if(dto.getBlacklist().equals("s")){
-            this.blacklistFactory.salvar(id);
-        }
+//        if(blacklist.equals("s")){
+//            this.blacklistFactory.salvar(id);
+//        }
     }
 
 
