@@ -9,11 +9,9 @@ import com.imagem.backend.exceptions.NotInvited;
 import com.imagem.backend.exceptions.UserAlreadyExistException;
 import com.imagem.backend.exceptions.UserNotAuthenticated;
 import com.imagem.backend.exceptions.UserNotExist;
+import com.imagem.backend.infra.ext.BlacklistFactory;
 import com.imagem.backend.infra.security.UserSession;
-import com.imagem.backend.repositories.FieldChangeRepository;
-import com.imagem.backend.repositories.InviteRepository;
-import com.imagem.backend.repositories.NotificationRepository;
-import com.imagem.backend.repositories.UserRepository;
+import com.imagem.backend.repositories.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -42,12 +40,23 @@ public class UserService {
 
     private final NotificationRepository notificationRepository;
 
-    public UserService(UserRepository userRepository, InviteRepository inviteRepository, UserSession userSession, FieldChangeRepository fieldChangeRepository, NotificationRepository notificationRepository) {
+    private final BlacklistFactory blacklistFactory;
+
+    private final StatusTermoRepository statusTermoRepository;
+
+    private final NotificationTermRepository notificationTermRepository;
+
+    public UserService(UserRepository userRepository, InviteRepository inviteRepository, UserSession userSession,
+                       FieldChangeRepository fieldChangeRepository, NotificationRepository notificationRepository,
+                       BlacklistFactory blacklistFactory, StatusTermoRepository statusTermoRepository, NotificationTermRepository notificationTermRepository) {
         this.userRepository = userRepository;
         this.inviteRepository = inviteRepository;
         this.userSession = userSession;
         this.fieldChangeRepository = fieldChangeRepository;
         this.notificationRepository = notificationRepository;
+        this.blacklistFactory = blacklistFactory;
+        this.statusTermoRepository = statusTermoRepository;
+        this.notificationTermRepository = notificationTermRepository;
     }
 
 
@@ -296,7 +305,7 @@ public class UserService {
 
         return usersResponseDTO;
     }
-    public void deleteUser(Integer id){
+    public void deleteUser(Integer id, DeleteDTO dto){
 
         log.info("Buscando pelo id do usuario...");
         User user = this.userRepository.findById(id).orElse(null);
@@ -315,7 +324,39 @@ public class UserService {
             }
         }
 
+        if(user.getStatusTerm() != null){
+            for(StatusTerm statusTerm: user.getStatusTerm()){
+                statusTerm.setUser(null);
+                statusTermoRepository.saveAndFlush(statusTerm);
+            }
+        }
+
+        if(user.getInvites() != null){
+            for(Invite invite: user.getInvites()){
+                invite.setSolicitante(null);
+                inviteRepository.saveAndFlush(invite);
+            }
+        }
+
+        if(user.getNotifications() != null){
+            for(Notification notification: user.getNotifications()){
+                notification.setUser(null);
+                notificationRepository.saveAndFlush(notification);
+            }
+        }
+
+        if(user.getNotificationTerms() != null){
+            for(NotificationTerm notification: user.getNotificationTerms()){
+                notification.setUser(null);
+                notificationTermRepository.saveAndFlush(notification);
+            }
+        }
+
         this.userRepository.delete(user);
+
+        if(dto.getBlacklist().equals("s")){
+            this.blacklistFactory.salvar(id);
+        }
     }
 
 
