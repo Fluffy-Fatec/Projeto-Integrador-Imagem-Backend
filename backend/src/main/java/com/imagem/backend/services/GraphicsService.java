@@ -24,6 +24,11 @@ public class GraphicsService {
     public GraphicsService(ReviewRepository reviewRepository) {
         this.reviewRepository = reviewRepository;
     }
+
+    public List<Review> listByDatasource(String origin){
+        return this.reviewRepository.findByOrigin(origin);
+    }
+
     public List<Review> listReview(){
         log.info("Buscando os registros de review...");
         return reviewRepository.findAll();

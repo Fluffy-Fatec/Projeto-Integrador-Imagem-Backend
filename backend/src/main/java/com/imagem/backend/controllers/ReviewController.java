@@ -121,6 +121,14 @@ public class ReviewController {
 
         return ResponseEntity.ok().body(words);
     }
+
+    @GetMapping("/datasource/list/{origin}")
+    public ResponseEntity<List<Review>> listByDatasource(
+            @PathVariable(value = "origin") String datasource) {
+        List<Review> listReview = this.graphicsService.listByDatasource(datasource);
+
+        return ResponseEntity.ok().body(listReview);
+    }
 }
 
 

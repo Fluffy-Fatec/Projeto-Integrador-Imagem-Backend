@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
+	List<Review> findByOrigin(String origin);
+
 	List<Review> findByReviewCreationDateBetween(Timestamp startDate, Timestamp endDate);
 
 	List<Review> findByReviewCreationDateBetweenAndOrigin(Timestamp startDate, Timestamp endDate, String origin);
@@ -75,6 +77,7 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 			String sentimentoPredito,
 			String state,
 			String origin);
+
 	@Query("SELECT DISTINCT r.geolocationCountry FROM Review r")
 	List<String> findDistinctGeolocationCountry();
 
