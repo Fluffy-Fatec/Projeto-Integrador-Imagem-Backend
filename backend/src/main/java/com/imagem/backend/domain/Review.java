@@ -37,8 +37,14 @@ public class Review {
     @Column(name = "geolocation_state")
     private String geolocationState;
 
+    @Column(name = "geolocation_country")
+    private String geolocationCountry;
+
     @Column(name = "geolocation_point")
     private String geolocation;
+
+    @Column(name = "origin")
+    private String origin;
 
     @Column(name = "review_creation_date")
     private Timestamp reviewCreationDate;
