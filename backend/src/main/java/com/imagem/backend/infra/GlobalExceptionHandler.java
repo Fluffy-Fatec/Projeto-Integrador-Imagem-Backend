@@ -84,6 +84,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(threatResponse);
     }
 
+    @ExceptionHandler(TermNotAccepted.class)
+    private ResponseEntity<RestErrorMessage> termNotAccepted(TermNotAccepted exception){
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.FORBIDDEN,exception.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(threatResponse);
+    }
+
+    @ExceptionHandler(FirstTimeTermAccepted.class)
+    private ResponseEntity<RestErrorMessage> firstTimeAccepted(FirstTimeTermAccepted exception){
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.FORBIDDEN,exception.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(threatResponse);
+    }
+
 
 
 }

@@ -5,11 +5,16 @@ import com.imagem.backend.domain.Word;
 import com.imagem.backend.services.GraphicsService;
 import com.imagem.backend.services.WordService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
+
+
+import java.util.Date;
+
 
 @RestController
 @RequestMapping("/graphics")
@@ -32,6 +37,90 @@ public class ReviewController {
         return ResponseEntity.ok().body(reviewList);
     }
 
+    @GetMapping("/countries")
+    public ResponseEntity<List<String>> listCountry(){
+
+        List<String> countries = this.graphicsService.listCountry();
+        return ResponseEntity.ok().body(countries);
+    }
+
+    @GetMapping("/states")
+    public ResponseEntity<List<String>> listState(){
+
+        List<String> states = this.graphicsService.listState();
+        return ResponseEntity.ok().body(states);
+    }
+
+    @GetMapping("/datasource")
+    public ResponseEntity<List<String>> listDatasources(){
+
+        List<String> countries = this.graphicsService.listOrigin();
+        return ResponseEntity.ok().body(countries);
+    }
+
+    @GetMapping("/listByDateRange")
+    public ResponseEntity<List<Review>> listReviewByDateRange(
+            @RequestParam("startDate") String startDateString,
+            @RequestParam("endDate") String endDateString,
+            @RequestParam(value = "state", required = false) String state,
+            @RequestParam(value = "country", required = false) String country,
+            @RequestParam(value = "datasource", required = false) String datasource,
+            @RequestParam(value = "sentimentoPredito", required = false) String sentimentoPredito) {
+        Timestamp startTimestamp = parseDateStringToTimestamp(startDateString);
+        Timestamp endTimestamp = parseDateStringToTimestamp(endDateString);
+
+        if (startTimestamp == null || endTimestamp == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<Review> reviewList;
+        if (state != null && country != null && sentimentoPredito != null && datasource != null) {
+            reviewList = this.graphicsService.listReviewByDateRangeAndSentimentStateCountryOrigin(startTimestamp, endTimestamp, sentimentoPredito, state, country, datasource); // Retorna 2 se todos os campos estiverem preenchidos
+        } else if (state != null && country != null && sentimentoPredito != null) {
+            reviewList = this.graphicsService.listReviewByDateRangeAndSentimentStateCountry(startTimestamp, endTimestamp, sentimentoPredito, state, country); // Retorna 3 se state, country e sentimentoPredito estiverem preenchidos
+        } else if (state != null && country != null && datasource != null) {
+            reviewList = this.graphicsService.listReviewByDateRangeAndStateCountryOrigin(startTimestamp, endTimestamp, state, country, datasource); // Retorna 4 se state, country e datasource estiverem preenchidos
+        } else if (state != null && sentimentoPredito != null && datasource != null) {
+            reviewList = this.graphicsService.listReviewByDateRangeAndSentimentoStateOrigin(startTimestamp, endTimestamp,sentimentoPredito, state, datasource); // Retorna 5 se state, sentimentoPredito e datasource estiverem preenchidos
+        } else if (country != null && sentimentoPredito != null && datasource != null) {
+            reviewList = this.graphicsService.listReviewByDateRangeAndSentimentoCountryOrigin(startTimestamp, endTimestamp,sentimentoPredito, country, datasource); // Retorna 6 se country, sentimentoPredito e datasource estiverem preenchidos
+        } else if (state != null && country != null) {
+            reviewList = this.graphicsService.listReviewByDateRangeAndStateCountry(startTimestamp, endTimestamp,state, country); // Retorna 7 se state e country estiverem preenchidos
+        } else if (state != null && sentimentoPredito != null) {
+            reviewList = this.graphicsService.listReviewByDateRangeAndSentimentState(startTimestamp, endTimestamp,sentimentoPredito, state); // Retorna 8 se state e sentimentoPredito estiverem preenchidos
+        } else if (state != null && datasource != null) {
+            reviewList = this.graphicsService.listReviewByDateRangeAndStateOrigin(startTimestamp, endTimestamp, state, datasource); // Retorna 9 se state e datasource estiverem preenchidos
+        } else if (country != null && sentimentoPredito != null) {
+            reviewList = this.graphicsService.listReviewByDateRangeAndSentimentCountry(startTimestamp, endTimestamp, sentimentoPredito, country); // Retorna 10 se country e sentimentoPredito estiverem preenchidos
+        } else if (country != null && datasource != null) {
+            reviewList = this.graphicsService.listReviewByDateRangeAndCountryOrigin(startTimestamp, endTimestamp,country, datasource); // Retorna 11 se country e datasource estiverem preenchidos
+        } else if (sentimentoPredito != null && datasource != null) {
+            reviewList = this.graphicsService.listReviewByDateRangeAndSentimentOrigin(startTimestamp, endTimestamp,sentimentoPredito, datasource); // Retorna 12 se sentimentoPredito e datasource estiverem preenchidos
+        } else if (state != null) {
+            reviewList = this.graphicsService.listReviewByDateRangeState(startTimestamp, endTimestamp, state); // Retorna 13 se apenas state estiver preenchido
+        } else if (country != null) {
+            reviewList = this.graphicsService.listReviewByDateRangeCountry(startTimestamp, endTimestamp,country); // Retorna 14 se apenas country estiver preenchido
+        } else if (sentimentoPredito != null) {
+            reviewList = this.graphicsService.listReviewByDateRangeAndSentiment(startTimestamp, endTimestamp, sentimentoPredito); // Retorna 15 se apenas sentimentoPredito estiver preenchido
+        } else if (datasource != null) {
+            reviewList = this.graphicsService.listReviewByDateRangeAndOrigin(startTimestamp, endTimestamp, datasource); // Retorna 16 se apenas datasource estiver preenchido
+        } else {
+            reviewList = this.graphicsService.listReviewByDateRange(startTimestamp, endTimestamp);// Retorna 17 se nenhum campo estiver preenchido
+        }
+        return ResponseEntity.ok().body(reviewList);
+    }
+
+    private Timestamp parseDateStringToTimestamp(String dateString) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        try {
+            Date date = dateFormat.parse(dateString);
+            return new Timestamp(date.getTime());
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     @GetMapping("/word")
     public ResponseEntity<List<Word>> listWords(){
 
@@ -39,4 +128,14 @@ public class ReviewController {
 
         return ResponseEntity.ok().body(words);
     }
+
+    @GetMapping("/datasource/list/{origin}")
+    public ResponseEntity<List<Review>> listByDatasource(
+            @PathVariable(value = "origin") String datasource) {
+        List<Review> listReview = this.graphicsService.listByDatasource(datasource);
+
+        return ResponseEntity.ok().body(listReview);
+    }
 }
+
+

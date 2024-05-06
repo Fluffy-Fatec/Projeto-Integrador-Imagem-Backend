@@ -1,12 +1,11 @@
 package com.imagem.backend.controllers;
 
 
-import com.imagem.backend.domain.ENUM.UserRole;
-import com.imagem.backend.domain.FieldChange;
 import com.imagem.backend.domain.User;
 import com.imagem.backend.dtos.*;
 import com.imagem.backend.infra.security.TokenService;
 import com.imagem.backend.services.EmailServiceSender;
+import com.imagem.backend.services.StatusTermService;
 import com.imagem.backend.services.UserService;
 import com.imagem.backend.utils.GmailValidator;
 import com.imagem.backend.validators.UserServiceValidator;
@@ -33,23 +32,34 @@ public class UserController {
 
     private final EmailServiceSender emailServiceSender;
 
-    public UserController(AuthenticationManager authenticationManager, UserService userService, TokenService tokenService, UserServiceValidator userServiceValidator, EmailServiceSender emailServiceSender) {
+    private final StatusTermService statusTermService;
+
+    public UserController(AuthenticationManager authenticationManager, UserService userService, TokenService tokenService, UserServiceValidator userServiceValidator, EmailServiceSender emailServiceSender, StatusTermService statusTermService) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.tokenService = tokenService;
         this.userServiceValidator = userServiceValidator;
         this.emailServiceSender = emailServiceSender;
+        this.statusTermService = statusTermService;
     }
 
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid AuthenticationDTO data){
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.username(), data.password());
+
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
+        this.statusTermService.verifyTermAccepted(data.username());
         LoginResponseDTO token = tokenService.generateToken((User) auth.getPrincipal());
 
         return ResponseEntity.ok(token);
+    }
+
+    @PostMapping("/user/term")
+    public ResponseEntity termAccept(@RequestBody TermAcceptedDTO termAcceptedDTO) {
+        this.statusTermService.termAccept(termAcceptedDTO);
+        return ResponseEntity.ok().body(new GlobalResponseDTO("Termo atualizado com sucesso!"));
     }
 
     @PostMapping("/register/{id}")
@@ -61,14 +71,6 @@ public class UserController {
 
         return ResponseEntity.ok().body(new GlobalResponseDTO("conta criada com sucesso"));
     }
-
-    // Metodo simples para gerar usuario pela primeira , apagar quando for subir para main
-//    @PostMapping("/register/adm")
-//    public ResponseEntity<GlobalResponseDTO> registerAdm(@RequestBody @Valid RegisterDTO data){
-//        this.userService.saveAdm(data);
-//
-//        return ResponseEntity.ok().body(new GlobalResponseDTO("conta criada com sucesso"));
-//    }
 
     @PostMapping("/invite")
     public ResponseEntity<GlobalResponseDTO> inviteUser(@RequestBody @Valid SendInviteRequestDTO sendInviteRequestDTO){
@@ -137,7 +139,8 @@ public class UserController {
 
 
     @DeleteMapping("/delete/user/{id}")
-    public ResponseEntity daleteUser(@PathVariable("id") Integer id) {
+    public ResponseEntity daleteUser(@PathVariable("id") Integer id){
+//                                     @RequestBody DeleteDTO dto)
 
         this.userService.deleteUser(id);
         return ResponseEntity.ok().body(new GlobalResponseDTO("Usuário deletado"));
@@ -159,4 +162,20 @@ public class UserController {
         return ResponseEntity.ok().body(updateUserRequestDTO);
     }
 
+    @GetMapping("/field/notification")
+    public ResponseEntity<List<ResponseNotificationDTO>> notificationFieldChange(){
+        List<ResponseNotificationDTO> notification = this.userService.notificationFieldChange();
+
+        return ResponseEntity.ok().body(notification);
+    }
+
+    @PutMapping("/notification/update/{id}")
+    public ResponseEntity updateNotificationFieldStatus(@PathVariable("id") Integer id){
+
+        System.out.println(id);
+
+        this.userService.updateNotificationField(id);
+
+        return ResponseEntity.ok().body(new GlobalResponseDTO("Atualizacao de acesso realizada"));
+    }
 }
