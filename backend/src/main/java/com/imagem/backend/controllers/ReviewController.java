@@ -44,6 +44,13 @@ public class ReviewController {
         return ResponseEntity.ok().body(countries);
     }
 
+    @GetMapping("/states")
+    public ResponseEntity<List<String>> listState(){
+
+        List<String> states = this.graphicsService.listState();
+        return ResponseEntity.ok().body(states);
+    }
+
     @GetMapping("/datasource")
     public ResponseEntity<List<String>> listDatasources(){
 
