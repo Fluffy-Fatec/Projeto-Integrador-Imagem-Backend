@@ -101,6 +101,10 @@ public class GraphicsService {
         return this.reviewRepository.findDistinctGeolocationCountry();
     }
 
+    public List<String> listState(){
+        return this.reviewRepository.findDistinctGeolocationState();
+    }
+
     public List<String> listOrigin(){
         return this.reviewRepository.findDistinctOrigin();
     }

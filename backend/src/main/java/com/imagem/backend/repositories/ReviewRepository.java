@@ -81,6 +81,9 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 	@Query("SELECT DISTINCT r.geolocationCountry FROM Review r")
 	List<String> findDistinctGeolocationCountry();
 
+	@Query("SELECT DISTINCT r.geolocationState FROM Review r")
+	List<String> findDistinctGeolocationState();
+	
 	@Query("SELECT DISTINCT r.origin FROM Review r")
 	List<String> findDistinctOrigin();
 }
