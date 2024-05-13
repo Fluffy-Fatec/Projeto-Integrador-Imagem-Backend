@@ -151,7 +151,7 @@ public class ReviewController {
 
         reportService.generateCSV(origin, startDateString, endDateString, state, country, sentimentoPredito);
 
-        String csvFileName = "review_report.csv";
+        String csvFileName = "review_report.csv"; // Nome fixo do arquivo CSV
 
         return ResponseEntity.ok().body("Relatório gerado com sucesso! Arquivo CSV disponível em: " + csvFileName);
     }

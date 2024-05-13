@@ -27,6 +27,7 @@ public class ReportService {
             throw new IllegalArgumentException("Datasource is a mandatory parameter.");
         }
 
+        // Tratamento para os parâmetros opcionais
         Timestamp startDate = null;
         Timestamp endDate = null;
         if (startDateString != null && !startDateString.isEmpty()) {
@@ -36,7 +37,8 @@ public class ReportService {
             endDate = parseDateStringToTimestamp(endDateString);
         }
 
-
+        // Consulta flexível com base nos parâmetros fornecidos
+        // Consulta flexível com base nos parâmetros fornecidos
         if (startDate != null && endDate != null && state != null && !state.isEmpty() && country != null && !country.isEmpty() && sentimentoPredito != null && !sentimentoPredito.isEmpty()) {
             return reviewRepository.findByOriginAndReviewCreationDateBetweenAndGeolocationStateAndGeolocationCountryAndSentimentoPredito(origin, startDate, endDate, state, country, sentimentoPredito);
         } else if (startDate != null && endDate != null && state != null && !state.isEmpty() && country != null && !country.isEmpty()) {
@@ -76,7 +78,7 @@ public class ReportService {
     public void generateCSV(String datasource, String startDateString, String endDateString, String state, String country, String sentimentoPredito) {
         List<Review> reviews = listReviewByFilters(datasource, startDateString, endDateString, state, country, sentimentoPredito);
 
-
+        // Escrever os resultados no arquivo CSV
         try (FileWriter writer = new FileWriter("review_report.csv")) {
             writer.append("id,review_comment_message,review_score,predictions,geolocation_lat,geolocation_lng,geolocation_state,geolocation_country,geolocation_point,origin,review_creation_date,creationdate\n");
             for (Review review : reviews) {
