@@ -24,6 +24,10 @@ public class StatusTerm {
     private Term termo;
 
     @ManyToOne
+    @JoinColumn(name = "idtermofunc")
+    private TermFunction termoFuncao;
+
+    @ManyToOne
     @JoinColumn(name = "iduser")
     private User user;
 

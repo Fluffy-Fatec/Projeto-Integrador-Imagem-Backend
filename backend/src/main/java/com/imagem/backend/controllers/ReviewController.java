@@ -3,6 +3,7 @@ package com.imagem.backend.controllers;
 import com.imagem.backend.domain.Review;
 import com.imagem.backend.domain.Word;
 import com.imagem.backend.services.GraphicsService;
+import com.imagem.backend.services.ReportService;
 import com.imagem.backend.services.WordService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +23,12 @@ public class ReviewController {
 
     private final GraphicsService graphicsService;
 
+    private final ReportService reportService;
     private final WordService wordService;
 
-    public ReviewController(GraphicsService graphicsService, WordService wordService) {
+    public ReviewController(GraphicsService graphicsService, ReportService reportService, WordService wordService) {
         this.graphicsService = graphicsService;
+        this.reportService = reportService;
         this.wordService = wordService;
     }
 
@@ -135,6 +138,22 @@ public class ReviewController {
         List<Review> listReview = this.graphicsService.listByDatasource(datasource);
 
         return ResponseEntity.ok().body(listReview);
+    }
+
+    @GetMapping("/review/report")
+    public ResponseEntity<String> generateReport(
+            @RequestParam(value = "startDate", required = false) String startDateString,
+            @RequestParam(value = "endDate", required = false) String endDateString,
+            @RequestParam(value = "state", required = false) String state,
+            @RequestParam(value = "country", required = false) String country,
+            @RequestParam(value = "origin", required = false) String origin,
+            @RequestParam(value = "sentimentoPredito", required = false) String sentimentoPredito) {
+
+        reportService.generateCSV(origin, startDateString, endDateString, state, country, sentimentoPredito);
+
+        String csvFileName = "review_report.csv"; // Nome fixo do arquivo CSV
+
+        return ResponseEntity.ok().body("Relatório gerado com sucesso! Arquivo CSV disponível em: " + csvFileName);
     }
 }
 
