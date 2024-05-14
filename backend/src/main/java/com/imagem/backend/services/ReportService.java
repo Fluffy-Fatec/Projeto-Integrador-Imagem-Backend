@@ -78,6 +78,14 @@ public class ReportService {
 
 
         try (FileWriter writer = new FileWriter("review_report.csv")) {
+            // Escrever a primeira linha personalizada em tamanho maior e centralizada
+            writer.append("Report Review Sentiments\n");
+            // Escrever a segunda linha com a data e hora de geração do relatório
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            String generatedDateTime = dateFormat.format(new Date());
+            writer.append("Generation Date: ").append(generatedDateTime).append("\n");
+
+            // Escrever as colunas com o cabeçalho verde
             writer.append("id,review_comment_message,review_score,predictions,geolocation_lat,geolocation_lng,geolocation_state,geolocation_country,geolocation_point,origin,review_creation_date,creationdate\n");
             for (Review review : reviews) {
                 writer.append(review.getId()).append(",")
