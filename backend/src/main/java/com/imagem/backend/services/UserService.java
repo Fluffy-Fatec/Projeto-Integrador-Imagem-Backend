@@ -354,12 +354,8 @@ public class UserService {
 
         this.userRepository.delete(user);
 
-//        if(blacklist.equals("s")){
-//            this.blacklistFactory.salvar(id);
-//        }
+        this.blacklistFactory.salvar(id);
     }
-
-
     public void updateRole(UpdateUserRoleRequestDTO roleRequestDTO){
 
         log.info("Buscando pelo id do usuario...");

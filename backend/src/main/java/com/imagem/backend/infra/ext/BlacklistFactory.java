@@ -2,7 +2,6 @@ package com.imagem.backend.infra.ext;
 
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Component // Substitui @Service (Spring 6.0)
