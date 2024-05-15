@@ -178,4 +178,5 @@ public class UserController {
 
         return ResponseEntity.ok().body(new GlobalResponseDTO("Atualizacao de acesso realizada"));
     }
+
 }
