@@ -2,6 +2,7 @@ package com.imagem.backend.controllers;
 
 import com.imagem.backend.domain.Review;
 import com.imagem.backend.domain.Word;
+import com.imagem.backend.dtos.GlobalResponseDTO;
 import com.imagem.backend.services.GraphicsService;
 import com.imagem.backend.services.ReportService;
 import com.imagem.backend.services.WordService;
@@ -154,6 +155,12 @@ public class ReviewController {
         String csvFileName = "review_report.csv";
 
         return ResponseEntity.ok().body("Relatório gerado com sucesso! Arquivo CSV disponível em: " + csvFileName);
+    }
+
+    @DeleteMapping("/review/{id}")
+    public ResponseEntity deleteReview(@PathVariable Integer id){
+        this.graphicsService.deleteReview(id);
+        return ResponseEntity.ok().body(new GlobalResponseDTO("Deletado com sucesso!"));
     }
 }
 

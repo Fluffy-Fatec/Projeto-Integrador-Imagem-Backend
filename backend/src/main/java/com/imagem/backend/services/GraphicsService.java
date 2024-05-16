@@ -13,6 +13,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -108,5 +109,10 @@ public class GraphicsService {
     public List<String> listOrigin(){
         return this.reviewRepository.findDistinctOrigin();
     }
-}
 
+    public void deleteReview(Integer reviewId){
+        Review review = this.reviewRepository.findById(reviewId).orElseThrow();
+
+        this.reviewRepository.delete(review);
+    }
+}
