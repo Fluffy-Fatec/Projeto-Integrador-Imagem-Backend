@@ -1,4 +1,6 @@
 package com.imagem.backend.dtos;
 
-public record TermAcceptedDTO (String username, String termAccepted){
+import java.util.List;
+
+public record TermAcceptedDTO (String username, String termAccepted, List<Integer> functionsId){
 }

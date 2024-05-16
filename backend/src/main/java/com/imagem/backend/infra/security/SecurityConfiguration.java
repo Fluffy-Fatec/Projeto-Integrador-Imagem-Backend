@@ -51,7 +51,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/graphics/listByDateRange").permitAll()
                         .requestMatchers(HttpMethod.GET, "/graphics/review/report").permitAll()
                         .requestMatchers(HttpMethod.GET, "/term/function/list").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/term/function/accept").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/term/function/accept").permitAll()
                         .requestMatchers(HttpMethod.GET, "/graphics/word").hasRole("USER")
                         .requestMatchers(HttpMethod.GET, "/auth/field/notification").hasRole("USER")
                         .requestMatchers(HttpMethod.PUT, "/auth/notification/update/**").hasRole("USER")

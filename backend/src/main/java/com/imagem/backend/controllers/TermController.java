@@ -50,7 +50,7 @@ public class TermController {
     @PutMapping("/function/accept")
     public ResponseEntity accepptFunctions(@RequestBody AcceptFucntionsRequest acceptFucntionsRequest){
 
-        this.statusTerm.updateTermFunction(acceptFucntionsRequest.functionId(), acceptFucntionsRequest.username());
+        this.statusTerm.updateTermFunction(acceptFucntionsRequest.functionId(), acceptFucntionsRequest.username(),acceptFucntionsRequest.statusTerm());
 
         return ResponseEntity.ok().body(new GlobalResponseDTO("Atualizacao realizada"));
     }
