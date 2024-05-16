@@ -56,19 +56,6 @@ public class StatusTermService {
 
     }
 
-
-    public void termAccept(TermAcceptedDTO termAcceptedDTO){
-        log.info("Buscando pela atual versao do termo");
-        Term termo = this.termRepository.findByAtualVersao(true);
-        log.info("Buscando pelo usuario");
-        User user = (User) this.userRepository.findByUsername(termAcceptedDTO.username());
-        log.info("Buscando pelo termo e pelo usuario");
-        List<StatusTerm> statusTerm = this.statusTermoRepository.findByTermoAndUser(termo,user);
-
-        log.info("Associando o termo e a reposta do usuario");
-
-    }
-
     public Term termActual(){
         return this.termRepository.findByAtualVersao(true);
     }
