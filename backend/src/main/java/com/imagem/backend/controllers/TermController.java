@@ -1,8 +1,9 @@
 package com.imagem.backend.controllers;
 
 import com.imagem.backend.domain.NotificationTerm;
-import com.imagem.backend.domain.StatusTerm;
 import com.imagem.backend.domain.Term;
+import com.imagem.backend.domain.TermFunction;
+import com.imagem.backend.dtos.AcceptFucntionsRequest;
 import com.imagem.backend.dtos.GlobalResponseDTO;
 import com.imagem.backend.services.StatusTermService;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +38,21 @@ public class TermController {
     public ResponseEntity updateNotification(@PathVariable("id") Integer id){
         this.statusTerm.updateNotificationTerm(id);
         return ResponseEntity.ok().body(new GlobalResponseDTO("Atualizacao de acesso realizada"));
+    }
+
+    @GetMapping("/function/list")
+    public ResponseEntity<List<TermFunction>> listTermFunction(){
+        List<TermFunction> termFunctions = this.statusTerm.listAllTermFunction();
+
+        return ResponseEntity.ok().body(termFunctions);
+    }
+
+    @PutMapping("/function/accept")
+    public ResponseEntity accepptFunctions(@RequestBody AcceptFucntionsRequest acceptFucntionsRequest){
+
+        this.statusTerm.updateTermFunction(acceptFucntionsRequest.functionId(), acceptFucntionsRequest.username());
+
+        return ResponseEntity.ok().body(new GlobalResponseDTO("Atualizacao realizada"));
     }
 
 }
