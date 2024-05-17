@@ -1,5 +1,6 @@
 package com.imagem.backend.controllers;
 
+import com.imagem.backend.domain.Report;
 import com.imagem.backend.domain.Review;
 import com.imagem.backend.domain.Word;
 import com.imagem.backend.dtos.GlobalResponseDTO;
@@ -161,6 +162,12 @@ public class ReviewController {
     public ResponseEntity deleteReview(@PathVariable Integer id){
         this.graphicsService.deleteReview(id);
         return ResponseEntity.ok().body(new GlobalResponseDTO("Deletado com sucesso!"));
+    }
+
+    @PostMapping("/report/log")
+    public ResponseEntity<Report> createReport(@RequestBody Report report) {
+        Report savedGraphic = graphicsService.saveReport(report);
+        return ResponseEntity.ok(savedGraphic);
     }
 }
 
