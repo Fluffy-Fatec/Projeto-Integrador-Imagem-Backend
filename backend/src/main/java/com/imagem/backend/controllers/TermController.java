@@ -47,10 +47,10 @@ public class TermController {
         return ResponseEntity.ok().body(termFunctions);
     }
 
-    @PutMapping("/function/accept")
+    @PostMapping("/function/accept")
     public ResponseEntity accepptFunctions(@RequestBody AcceptFucntionsRequest acceptFucntionsRequest){
 
-        this.statusTerm.updateTermFunction(acceptFucntionsRequest.functionId(), acceptFucntionsRequest.username());
+        this.statusTerm.updateTermFunction(acceptFucntionsRequest.functionId(), acceptFucntionsRequest.username(),acceptFucntionsRequest.statusTerm());
 
         return ResponseEntity.ok().body(new GlobalResponseDTO("Atualizacao realizada"));
     }

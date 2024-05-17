@@ -28,7 +28,6 @@ public class StatusTermService {
 
     private final TermFunctionRepository termFunctionRepository;
 
-
     public StatusTermService(StatusTermoRepository statusTermoRepository, TermRepository termRepository,
                              UserRepository userRepository, NotificationTermRepository notificationTermRepository, UserSession userSession, TermFunctionRepository termFunctionRepository) {
         this.statusTermoRepository = statusTermoRepository;
@@ -57,30 +56,6 @@ public class StatusTermService {
 
     }
 
-
-    public void termAccept(TermAcceptedDTO termAcceptedDTO){
-        log.info("Buscando pela atual versao do termo");
-        Term termo = this.termRepository.findByAtualVersao(true);
-        log.info("Buscando pelo usuario");
-        User user = (User) this.userRepository.findByUsername(termAcceptedDTO.username());
-        log.info("Buscando pelo termo e pelo usuario");
-        List<StatusTerm> statusTerm = this.statusTermoRepository.findByTermoAndUser(termo,user);
-
-        log.info("Associando o termo e a reposta do usuario");
-        if(statusTerm ==  null){
-            StatusTerm newStatusTerm = new StatusTerm();
-            newStatusTerm.setUser(user);
-            newStatusTerm.setTermo(termo);
-            newStatusTerm.setStatus(termAcceptedDTO.termAccepted());
-            this.statusTermoRepository.save(newStatusTerm);
-        }else{
-            for(StatusTerm statusTermExist: statusTerm) {
-                statusTermExist.setStatus(termAcceptedDTO.termAccepted());
-                this.statusTermoRepository.save(statusTermExist);
-            }
-        }
-    }
-
     public Term termActual(){
         return this.termRepository.findByAtualVersao(true);
     }
@@ -101,28 +76,62 @@ public class StatusTermService {
         return this.termFunctionRepository.findAll();
     }
 
-    public void updateTermFunction(List<Integer> functionsId, String username){
+    public void updateTermFunction(List<Integer> functionsId, String username, String termRequest){
 
         User user = (User) this.userRepository.findByUsername(username);
         Term termo = this.termRepository.findByAtualVersao(true);
 
         List<StatusTerm> statusTerms = this.statusTermoRepository.findByTermoAndUser(termo, user);
 
-        List<Integer> existFunctions = new ArrayList<>();
-        for(StatusTerm statusTerm: statusTerms){
-            existFunctions.add(statusTerm.getTermoFuncao().getId());
+        if (functionsId.isEmpty() || termRequest.equals("rejected")) {
+            List<StatusTerm> existTerms = this.statusTermoRepository.findByTermoAndUser(termo, user);
+            this.statusTermoRepository.deleteAllInBatch(existTerms);
+            StatusTerm statusTerm = new StatusTerm();
+            statusTerm.setStatus(termRequest);
+            statusTerm.setUser(user);
+            statusTerm.setTermo(termo);
+            this.statusTermoRepository.save(statusTerm);
+            return;
         }
 
-        List<StatusTerm> removeFunctions = new ArrayList<>();
-        for(Integer functionId: existFunctions){
-            if(!functionsId.contains(functionId)){
-                StatusTerm removeStatusTerm = new StatusTerm();
-                removeStatusTerm.getTermoFuncao().setId(functionId);
-                removeFunctions.add(removeStatusTerm);
+        if(statusTerms.isEmpty()){
+
+            for (Integer functionId : functionsId) {
+                TermFunction termFunction = new TermFunction();
+                StatusTerm statusTerm = new StatusTerm();
+                termFunction.setId(functionId);
+                statusTerm.setUser(user);
+                statusTerm.setTermo(termo);
+                statusTerm.setStatus(termRequest);
+                statusTerm.setTermoFuncao(termFunction);
+                this.statusTermoRepository.save(statusTerm);
+            }
+            return;
+        }
+
+        for (StatusTerm statusTermExist : statusTerms) {
+            statusTermExist.setStatus(termRequest);
+            this.statusTermoRepository.save(statusTermExist);
+        }
+
+
+        List<Integer> existFunctions = new ArrayList<>();
+        for(StatusTerm statusTerm: statusTerms){
+            if(statusTerm.getTermoFuncao() != null){
+            existFunctions.add(statusTerm.getTermoFuncao().getId());
             }
         }
 
-        this.statusTermoRepository.deleteAllInBatch(removeFunctions);
+        for(Integer functionId: existFunctions){
+            if(!functionsId.contains(functionId)){
+                TermFunction termFunction = new TermFunction();
+                termFunction.setId(functionId);
+
+                StatusTerm removeStatusTerm = this.statusTermoRepository.findByTermoAndUserAndTermoFuncao(termo,user,termFunction);
+                this.statusTermoRepository.delete(removeStatusTerm);
+            }
+        }
+
 
         for(Integer functionId: functionsId){
             TermFunction termFunction = this.termFunctionRepository.findById(functionId).orElseThrow();
@@ -130,12 +139,15 @@ public class StatusTermService {
             StatusTerm statusTerm = this.statusTermoRepository.findByTermoAndUserAndTermoFuncao(termo,user,termFunction);
             if(statusTerm == null){
                 StatusTerm newStatusTerm = new StatusTerm();
-                newStatusTerm.setStatus("ACCEPTED");
                 newStatusTerm.setTermoFuncao(termFunction);
                 newStatusTerm.setUser(user);
                 newStatusTerm.setTermo(termo);
+                newStatusTerm.setStatus(termRequest);
+                this.statusTermoRepository.save(newStatusTerm);
+            }else{
+                statusTerm.setStatus(termRequest);
+                this.statusTermoRepository.save(statusTerm);
             }
         }
-
     }
 }
