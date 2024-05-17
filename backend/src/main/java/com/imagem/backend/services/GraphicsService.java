@@ -121,6 +121,14 @@ public class GraphicsService {
         this.reviewRepository.delete(review);
     }
 
+    public Review updateReview(Integer reviewId, String sentimentId) {
+
+        Review review = this.reviewRepository.findById(reviewId).orElseThrow();
+        review.setSentimentoPredito(sentimentId);
+        this.reviewRepository.save(review);
+
+        return review;
+    }
     public Report saveReport(Report report) {
         report.setData(new Timestamp(System.currentTimeMillis()));
         return reportRepository.save(report);
