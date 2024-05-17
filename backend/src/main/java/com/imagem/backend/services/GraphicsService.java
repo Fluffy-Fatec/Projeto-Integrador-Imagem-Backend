@@ -1,7 +1,9 @@
 package com.imagem.backend.services;
 
 
+import com.imagem.backend.domain.Report;
 import com.imagem.backend.domain.Review;
+import com.imagem.backend.repositories.ReportRepository;
 import com.imagem.backend.repositories.ReviewRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,8 +24,11 @@ public class GraphicsService {
 
     private final ReviewRepository reviewRepository;
 
-    public GraphicsService(ReviewRepository reviewRepository) {
+    private final ReportRepository reportRepository;
+
+    public GraphicsService(ReviewRepository reviewRepository, ReportRepository reportRepository) {
         this.reviewRepository = reviewRepository;
+        this.reportRepository = reportRepository;
     }
 
     public List<Review> listByDatasource(String origin){
@@ -116,12 +121,16 @@ public class GraphicsService {
         this.reviewRepository.delete(review);
     }
 
-    public Review updateReview(Integer reviewId, String sentimentId){
+    public Review updateReview(Integer reviewId, String sentimentId) {
 
         Review review = this.reviewRepository.findById(reviewId).orElseThrow();
         review.setSentimentoPredito(sentimentId);
         this.reviewRepository.save(review);
 
         return review;
+    }
+    public Report saveReport(Report report) {
+        report.setData(new Timestamp(System.currentTimeMillis()));
+        return reportRepository.save(report);
     }
 }

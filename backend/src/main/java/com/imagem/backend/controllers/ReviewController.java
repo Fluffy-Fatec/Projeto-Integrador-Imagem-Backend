@@ -1,5 +1,6 @@
 package com.imagem.backend.controllers;
 
+import com.imagem.backend.domain.Report;
 import com.imagem.backend.domain.Review;
 import com.imagem.backend.domain.Word;
 import com.imagem.backend.dtos.GlobalResponseDTO;
@@ -165,10 +166,14 @@ public class ReviewController {
 
     @PutMapping("/update/{revid}/{sentid}")
     public ResponseEntity<Review> updateReview(@PathVariable(value = "revid") Integer reviewId,
-                                       @PathVariable(value = "sentid") String sentimentId){
-        Review review = this.graphicsService.updateReview(reviewId,sentimentId);
+                                       @PathVariable(value = "sentid") String sentimentId) {
+        Review review = this.graphicsService.updateReview(reviewId, sentimentId);
         return ResponseEntity.ok().body(review);
     }
+
+    @PostMapping("/report/log")
+    public ResponseEntity<Report> createReport(@RequestBody Report report) {
+        Report savedGraphic = graphicsService.saveReport(report);
+        return ResponseEntity.ok(savedGraphic);
+    }
 }
-
-
