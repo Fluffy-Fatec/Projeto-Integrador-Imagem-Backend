@@ -162,6 +162,13 @@ public class ReviewController {
         this.graphicsService.deleteReview(id);
         return ResponseEntity.ok().body(new GlobalResponseDTO("Deletado com sucesso!"));
     }
+
+    @PutMapping("/update/{revid}/{sentid}")
+    public ResponseEntity<Review> updateReview(@PathVariable(value = "revid") Integer reviewId,
+                                       @PathVariable(value = "sentid") String sentimentId){
+        Review review = this.graphicsService.updateReview(reviewId,sentimentId);
+        return ResponseEntity.ok().body(review);
+    }
 }
 
 
