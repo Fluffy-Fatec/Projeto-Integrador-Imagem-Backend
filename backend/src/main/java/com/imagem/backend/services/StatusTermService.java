@@ -48,9 +48,9 @@ public class StatusTermService {
         List<StatusTerm> statusTerm = this.statusTermoRepository.findByTermoAndUser(termo,user);
 
         log.info("Validacao do termo de aceite");
-        if(statusTerm == null ){
+        if(statusTerm.isEmpty()){
             throw new FirstTimeTermAccepted();
-        }else if(statusTerm.get(0).getStatus().equals("rejected")) {
+        }else if(statusTerm.get(0).getStatus().equals("rejected") ) {
             throw new TermNotAccepted();
         }
 
