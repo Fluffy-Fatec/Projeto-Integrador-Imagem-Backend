@@ -46,6 +46,9 @@ public class Review {
     @Column(name = "origin")
     private String origin;
 
+    @Column(name = "classifier")
+    private Integer classifier;
+
     @Column(name = "review_creation_date")
     private Timestamp reviewCreationDate;
 
