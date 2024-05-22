@@ -1,8 +1,10 @@
 package com.imagem.backend.controllers;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.imagem.backend.domain.Report;
 import com.imagem.backend.domain.Review;
 import com.imagem.backend.domain.Word;
+import com.imagem.backend.dtos.ClassifierDTO;
 import com.imagem.backend.dtos.GlobalResponseDTO;
 import com.imagem.backend.services.GraphicsService;
 import com.imagem.backend.services.ReportService;
@@ -162,6 +164,14 @@ public class ReviewController {
     public ResponseEntity deleteReview(@PathVariable Integer id){
         this.graphicsService.deleteReview(id);
         return ResponseEntity.ok().body(new GlobalResponseDTO("Deletado com sucesso!"));
+    }
+
+    @PostMapping("/review/classifier/{id}")
+    public ResponseEntity<Review> updateClassifier(@PathVariable("id") Integer id, @RequestBody ClassifierDTO classifier){
+        System.out.println("asdasas");
+        Review review = this.graphicsService.updateClassifier(id, classifier);
+
+        return ResponseEntity.ok().body(review);
     }
 
     @PutMapping("/update/{revid}/{sentid}")

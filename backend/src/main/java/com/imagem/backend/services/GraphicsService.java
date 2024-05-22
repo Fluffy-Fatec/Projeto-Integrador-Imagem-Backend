@@ -3,6 +3,8 @@ package com.imagem.backend.services;
 
 import com.imagem.backend.domain.Report;
 import com.imagem.backend.domain.Review;
+import com.imagem.backend.dtos.ClassifierDTO;
+import com.imagem.backend.exceptions.ReviewNotFound;
 import com.imagem.backend.repositories.ReportRepository;
 import com.imagem.backend.repositories.ReviewRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -157,5 +159,15 @@ public class GraphicsService {
         log.info("Realizando salvamento de report.");
         report.setData(new Timestamp(System.currentTimeMillis()));
         return reportRepository.save(report);
+    }
+
+    public Review updateClassifier(Integer id, ClassifierDTO classifier){
+        log.info("Realizando busca de review.");
+        Review review = this.reviewRepository.findById(id).orElseThrow(ReviewNotFound::new);
+
+        log.info("Salvando a alteracao do review.");
+        review.setClassifier(classifier.getClassifier());
+        this.reviewRepository.save(review);
+        return review;
     }
 }
