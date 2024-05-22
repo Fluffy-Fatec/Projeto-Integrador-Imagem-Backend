@@ -52,9 +52,9 @@ public class ReviewController {
     }
 
     @GetMapping("/states")
-    public ResponseEntity<List<String>> listState(){
+    public ResponseEntity<List<String>> listState(@RequestParam(value = "country", required = false) String country){
 
-        List<String> states = this.graphicsService.listState();
+        List<String> states = this.graphicsService.listState(country);
         return ResponseEntity.ok().body(states);
     }
 
