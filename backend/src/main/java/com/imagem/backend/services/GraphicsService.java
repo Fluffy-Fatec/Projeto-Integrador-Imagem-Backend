@@ -127,9 +127,9 @@ public class GraphicsService {
         return this.reviewRepository.findDistinctGeolocationCountry();
     }
 
-    public List<String> listState(){
+    public List<String> listState(String country){
         log.info("Realizando busca de estados.");
-        return this.reviewRepository.findDistinctGeolocationState();
+        return this.reviewRepository.findDistinctOriginByCountry(country);
     }
 
     public List<String> listOrigin(){

@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
@@ -81,11 +82,12 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 	@Query("SELECT DISTINCT r.geolocationCountry FROM Review r")
 	List<String> findDistinctGeolocationCountry();
 
-	@Query("SELECT DISTINCT r.geolocationState FROM Review r")
-	List<String> findDistinctGeolocationState();
+	@Query("SELECT DISTINCT r.geolocationState FROM Review r WHERE r.geolocationCountry = :country")
+	List<String> findDistinctOriginByCountry(@Param("country") String country);
 	
 	@Query("SELECT DISTINCT r.origin FROM Review r")
 	List<String> findDistinctOrigin();
+
 
 	List<Review> findByOriginAndReviewCreationDateBetween(String origin, Timestamp startDate, Timestamp endDate);
 
