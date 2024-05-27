@@ -2,20 +2,22 @@ package com.imagem.backend.services;
 
 import com.imagem.backend.domain.Invite;
 import com.imagem.backend.domain.User;
+import com.imagem.backend.dtos.LogSender;
 import com.imagem.backend.dtos.SendInviteRequestDTO;
+import com.imagem.backend.dtos.UserLog;
 import com.imagem.backend.exceptions.EmailAlreadyInvited;
 import com.imagem.backend.exceptions.InviteAlreadySend;
 import com.imagem.backend.infra.email.EmailSender;
+import com.imagem.backend.infra.ext.LogProducerService;
 import com.imagem.backend.infra.security.UserSession;
 import com.imagem.backend.repositories.InviteRepository;
 import com.imagem.backend.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class EmailServiceSender {
+public class EmailServiceSender extends LogProducerService {
 
     private final InviteRepository inviteRepository;
 
@@ -25,7 +27,8 @@ public class EmailServiceSender {
 
     private UserSession userSession;
 
-    public EmailServiceSender(InviteRepository inviteRepository, EmailSender emailSender, UserRepository userRepository, UserSession userSession) {
+    public EmailServiceSender(InviteRepository inviteRepository, EmailSender emailSender, UserRepository userRepository, UserSession userSession
+                              ) {
         this.inviteRepository = inviteRepository;
         this.emailSender = emailSender;
         this.userRepository = userRepository;
@@ -41,6 +44,7 @@ public class EmailServiceSender {
         log.info("Buscando o usuário logado...");
         User userLogged = userSession.userLogged();
 
+        LogSender logObject = new LogSender();
         log.info("Tenntativa de enviar convite ao email...");
         try{
 
@@ -56,6 +60,10 @@ public class EmailServiceSender {
             inviteRepository.save(invite);
 
             log.info("Novo registro salvo...");
+
+            logObject.setUsuario(new UserLog(userLogged.getNome(), userLogged.getId()));
+            logObject.setRegistro("Foi enviado um convite a um novo usuario");
+            sendMessage(logObject);
 
         }catch (Exception e){
             throw new InviteAlreadySend();
