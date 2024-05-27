@@ -5,7 +5,10 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.imagem.backend.domain.User;
+import com.imagem.backend.dtos.LogSender;
 import com.imagem.backend.dtos.LoginResponseDTO;
+import com.imagem.backend.dtos.UserLog;
+import com.imagem.backend.infra.ext.LogProducerService;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -13,13 +16,17 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 @Service
-public class TokenService {
+public class TokenService extends LogProducerService {
 
     private final String secret = "717ee184-8648-4d5e-b8c7-049ef21119e7";
 
     public LoginResponseDTO generateToken(User user){
+        LogSender logObject = new LogSender();
         try{
             Algorithm algorithm = Algorithm.HMAC256(secret);
+            logObject.setUsuario(new UserLog(user.getNome(), user.getId()));
+            logObject.setRegistro("O usuario efetuou o login com sucesso");
+            sendMessage(logObject);
             return new LoginResponseDTO(JWT.create()
                     .withIssuer("auth-api")
                     .withSubject(user.getUsername())
@@ -27,6 +34,9 @@ public class TokenService {
                     .sign(algorithm), user.getRole().getRole());
 
         }catch(JWTCreationException e){
+            logObject.setUsuario(new UserLog(user.getNome(), user.getId()));
+            logObject.setRegistro("O usuario tentou efetuar o login e falhou ao gerar o token");
+            sendMessage(logObject);
             throw new RuntimeException("Erro ao gerar token", e);
 
         }

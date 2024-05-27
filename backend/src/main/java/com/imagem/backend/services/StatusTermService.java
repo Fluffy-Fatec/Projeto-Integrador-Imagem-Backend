@@ -1,20 +1,24 @@
 package com.imagem.backend.services;
 
 import com.imagem.backend.domain.*;
-import com.imagem.backend.dtos.TermAcceptedDTO;
+import com.imagem.backend.dtos.LogSender;
+import com.imagem.backend.dtos.UserLog;
 import com.imagem.backend.exceptions.FirstTimeTermAccepted;
 import com.imagem.backend.exceptions.TermNotAccepted;
+import com.imagem.backend.infra.ext.LogProducerService;
 import com.imagem.backend.infra.security.UserSession;
 import com.imagem.backend.repositories.*;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Log4j2
-public class StatusTermService {
+public class StatusTermService extends LogProducerService {
 
     private final StatusTermoRepository statusTermoRepository;
 
@@ -29,7 +33,9 @@ public class StatusTermService {
     private final TermFunctionRepository termFunctionRepository;
 
     public StatusTermService(StatusTermoRepository statusTermoRepository, TermRepository termRepository,
-                             UserRepository userRepository, NotificationTermRepository notificationTermRepository, UserSession userSession, TermFunctionRepository termFunctionRepository) {
+                             UserRepository userRepository, NotificationTermRepository notificationTermRepository,
+                             UserSession userSession, TermFunctionRepository termFunctionRepository,
+                             KafkaTemplate<String, Serializable> kafkaTemplate) {
         this.statusTermoRepository = statusTermoRepository;
         this.termRepository = termRepository;
         this.userRepository = userRepository;
@@ -39,47 +45,61 @@ public class StatusTermService {
     }
 
 
-    public void verifyTermAccepted(String username){
+    public void verifyTermAccepted(String username) {
         log.info("Buscando pela atual versao do termo");
         Term termo = this.termRepository.findByAtualVersao(true);
         log.info("Buscando pelo usuario");
         User user = (User) this.userRepository.findByUsername(username);
         log.info("Buscando pelo termo e pelo usuario");
-        List<StatusTerm> statusTerm = this.statusTermoRepository.findByTermoAndUser(termo,user);
+        List<StatusTerm> statusTerm = this.statusTermoRepository.findByTermoAndUser(termo, user);
 
         log.info("Validacao do termo de aceite");
-        if(statusTerm.isEmpty()){
+        if (statusTerm.isEmpty()) {
             throw new FirstTimeTermAccepted();
-        }else if(statusTerm.get(0).getStatus().equals("rejected") ) {
+        } else if (statusTerm.get(0).getStatus().equals("rejected")) {
             throw new TermNotAccepted();
         }
 
     }
 
-    public Term termActual(){
+    public Term termActual() {
         return this.termRepository.findByAtualVersao(true);
     }
 
-    public List<NotificationTerm> notificationTerm(){
+    public List<NotificationTerm> notificationTerm() {
         User user = this.userSession.userLogged();
+
+        LogSender logObject = new LogSender();
+        logObject.setUsuario(new UserLog(user.getNome(), user.getId()));
+        logObject.setRegistro("O usuario solicitou as notificacoes do termo de aceite");
+        sendMessage(logObject);
+
         return this.notificationTermRepository.findByUser(user);
     }
 
-    public void updateNotificationTerm(Integer id){
+    public void updateNotificationTerm(Integer id) {
         NotificationTerm notificationTerm = this.notificationTermRepository.findById(id).orElseThrow();
         notificationTerm.setFlagNotificacao("read");
 
         this.notificationTermRepository.save(notificationTerm);
+
+        LogSender logObject = new LogSender();
+        logObject.setUsuario(new UserLog(notificationTerm.getUser().getNome(), notificationTerm.getUser().getId()));
+        logObject.setRegistro("O usuario visualizou a notificacao do termo de aceite com id = " + notificationTerm.getId());
+        sendMessage(logObject);
     }
 
-    public List<TermFunction> listAllTermFunction(){
+    public List<TermFunction> listAllTermFunction() {
         return this.termFunctionRepository.findAll();
     }
 
-    public void updateTermFunction(List<Integer> functionsId, String username, String termRequest){
+    public void updateTermFunction(List<Integer> functionsId, String username, String termRequest) {
 
         User user = (User) this.userRepository.findByUsername(username);
         Term termo = this.termRepository.findByAtualVersao(true);
+
+        LogSender logObject = new LogSender();
+        logObject.setUsuario(new UserLog(user.getNome(), user.getId()));
 
         List<StatusTerm> statusTerms = this.statusTermoRepository.findByTermoAndUser(termo, user);
 
@@ -91,10 +111,12 @@ public class StatusTermService {
             statusTerm.setUser(user);
             statusTerm.setTermo(termo);
             this.statusTermoRepository.save(statusTerm);
+            logObject.setRegistro("O usuario "+termRequest+" o termo");
+            sendMessage(logObject);
             return;
         }
 
-        if(statusTerms.isEmpty()){
+        if (statusTerms.isEmpty()) {
 
             for (Integer functionId : functionsId) {
                 TermFunction termFunction = new TermFunction();
@@ -106,6 +128,8 @@ public class StatusTermService {
                 statusTerm.setTermoFuncao(termFunction);
                 this.statusTermoRepository.save(statusTerm);
             }
+            logObject.setRegistro("O usuario aceitou o termo e nao aceitou funcionalidade");
+            sendMessage(logObject);
             return;
         }
 
@@ -116,38 +140,42 @@ public class StatusTermService {
 
 
         List<Integer> existFunctions = new ArrayList<>();
-        for(StatusTerm statusTerm: statusTerms){
-            if(statusTerm.getTermoFuncao() != null){
-            existFunctions.add(statusTerm.getTermoFuncao().getId());
+        for (StatusTerm statusTerm : statusTerms) {
+            if (statusTerm.getTermoFuncao() != null) {
+                existFunctions.add(statusTerm.getTermoFuncao().getId());
             }
         }
 
-        for(Integer functionId: existFunctions){
-            if(!functionsId.contains(functionId)){
+        for (Integer functionId : existFunctions) {
+            if (!functionsId.contains(functionId)) {
                 TermFunction termFunction = new TermFunction();
                 termFunction.setId(functionId);
 
-                StatusTerm removeStatusTerm = this.statusTermoRepository.findByTermoAndUserAndTermoFuncao(termo,user,termFunction);
+                StatusTerm removeStatusTerm = this.statusTermoRepository.findByTermoAndUserAndTermoFuncao(termo, user, termFunction);
                 this.statusTermoRepository.delete(removeStatusTerm);
             }
         }
 
 
-        for(Integer functionId: functionsId){
+        for (Integer functionId : functionsId) {
             TermFunction termFunction = this.termFunctionRepository.findById(functionId).orElseThrow();
 
-            StatusTerm statusTerm = this.statusTermoRepository.findByTermoAndUserAndTermoFuncao(termo,user,termFunction);
-            if(statusTerm == null){
+            StatusTerm statusTerm = this.statusTermoRepository.findByTermoAndUserAndTermoFuncao(termo, user, termFunction);
+            if (statusTerm == null) {
                 StatusTerm newStatusTerm = new StatusTerm();
                 newStatusTerm.setTermoFuncao(termFunction);
                 newStatusTerm.setUser(user);
                 newStatusTerm.setTermo(termo);
                 newStatusTerm.setStatus(termRequest);
                 this.statusTermoRepository.save(newStatusTerm);
-            }else{
+            } else {
                 statusTerm.setStatus(termRequest);
                 this.statusTermoRepository.save(statusTerm);
             }
         }
+
+
+        logObject.setRegistro("O usuario aceitou o termo com id = " + termo.getId() + " e aceitou as seguintes funcionalidades com os id's= " + functionsId);
+        sendMessage(logObject);
     }
 }
