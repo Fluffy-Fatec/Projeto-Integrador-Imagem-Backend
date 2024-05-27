@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
@@ -81,9 +82,41 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 	@Query("SELECT DISTINCT r.geolocationCountry FROM Review r")
 	List<String> findDistinctGeolocationCountry();
 
-	@Query("SELECT DISTINCT r.geolocationState FROM Review r")
-	List<String> findDistinctGeolocationState();
+	@Query("SELECT DISTINCT r.geolocationState FROM Review r WHERE r.geolocationCountry = :country")
+	List<String> findDistinctOriginByCountry(@Param("country") String country);
 	
 	@Query("SELECT DISTINCT r.origin FROM Review r")
 	List<String> findDistinctOrigin();
+
+
+	List<Review> findByOriginAndReviewCreationDateBetween(String origin, Timestamp startDate, Timestamp endDate);
+
+	List<Review> findByOriginAndGeolocationState(String origin, String state);
+
+	List<Review> findByOriginAndGeolocationCountry(String origin, String country);
+
+	List<Review> findByOriginAndSentimentoPredito(String origin, String sentimentoPredito);
+
+	List<Review> findByOriginAndReviewCreationDateBetweenAndGeolocationState(String origin, Timestamp startDate, Timestamp endDate, String state);
+
+	List<Review> findByOriginAndReviewCreationDateBetweenAndGeolocationCountry(String origin, Timestamp startDate, Timestamp endDate, String country);
+
+	List<Review> findByOriginAndReviewCreationDateBetweenAndSentimentoPredito(String origin, Timestamp startDate, Timestamp endDate, String sentimentoPredito);
+
+	List<Review> findByOriginAndGeolocationStateAndGeolocationCountry(String origin, String state, String country);
+
+	List<Review> findByOriginAndGeolocationStateAndSentimentoPredito(String origin, String state, String sentimentoPredito);
+
+	List<Review> findByOriginAndGeolocationCountryAndSentimentoPredito(String origin, String country, String sentimentoPredito);
+
+	List<Review> findByOriginAndReviewCreationDateBetweenAndGeolocationStateAndGeolocationCountry(String origin, Timestamp startDate, Timestamp endDate, String state, String country);
+
+	List<Review> findByOriginAndReviewCreationDateBetweenAndGeolocationStateAndSentimentoPredito(String origin, Timestamp startDate, Timestamp endDate, String state, String sentimentoPredito);
+
+	List<Review> findByOriginAndReviewCreationDateBetweenAndGeolocationCountryAndSentimentoPredito(String origin, Timestamp startDate, Timestamp endDate, String country, String sentimentoPredito);
+
+	List<Review> findByOriginAndGeolocationStateAndGeolocationCountryAndSentimentoPredito(String origin, String state, String country, String sentimentoPredito);
+
+	List<Review> findByOriginAndReviewCreationDateBetweenAndGeolocationStateAndGeolocationCountryAndSentimentoPredito(String origin, Timestamp startDate, Timestamp endDate, String state, String country, String sentimentoPredito);
+
 }

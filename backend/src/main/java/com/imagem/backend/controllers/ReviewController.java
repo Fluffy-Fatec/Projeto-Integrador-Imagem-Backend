@@ -1,8 +1,13 @@
 package com.imagem.backend.controllers;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.imagem.backend.domain.Report;
 import com.imagem.backend.domain.Review;
 import com.imagem.backend.domain.Word;
+import com.imagem.backend.dtos.ClassifierDTO;
+import com.imagem.backend.dtos.GlobalResponseDTO;
 import com.imagem.backend.services.GraphicsService;
+import com.imagem.backend.services.ReportService;
 import com.imagem.backend.services.WordService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +27,12 @@ public class ReviewController {
 
     private final GraphicsService graphicsService;
 
+    private final ReportService reportService;
     private final WordService wordService;
 
-    public ReviewController(GraphicsService graphicsService, WordService wordService) {
+    public ReviewController(GraphicsService graphicsService, ReportService reportService, WordService wordService) {
         this.graphicsService = graphicsService;
+        this.reportService = reportService;
         this.wordService = wordService;
     }
 
@@ -45,9 +52,9 @@ public class ReviewController {
     }
 
     @GetMapping("/states")
-    public ResponseEntity<List<String>> listState(){
+    public ResponseEntity<List<String>> listState(@RequestParam(value = "country", required = false) String country){
 
-        List<String> states = this.graphicsService.listState();
+        List<String> states = this.graphicsService.listState(country);
         return ResponseEntity.ok().body(states);
     }
 
@@ -136,6 +143,47 @@ public class ReviewController {
 
         return ResponseEntity.ok().body(listReview);
     }
+
+    @GetMapping("/review/report")
+    public ResponseEntity<String> generateReport(
+            @RequestParam(value = "startDate", required = false) String startDateString,
+            @RequestParam(value = "endDate", required = false) String endDateString,
+            @RequestParam(value = "state", required = false) String state,
+            @RequestParam(value = "country", required = false) String country,
+            @RequestParam(value = "origin", required = false) String origin,
+            @RequestParam(value = "sentimentoPredito", required = false) String sentimentoPredito) {
+
+        reportService.generateCSV(origin, startDateString, endDateString, state, country, sentimentoPredito);
+
+        String csvFileName = "review_report.csv";
+
+        return ResponseEntity.ok().body("Relatório gerado com sucesso! Arquivo CSV disponível em: " + csvFileName);
+    }
+
+    @DeleteMapping("/review/{id}")
+    public ResponseEntity deleteReview(@PathVariable Integer id){
+        this.graphicsService.deleteReview(id);
+        return ResponseEntity.ok().body(new GlobalResponseDTO("Deletado com sucesso!"));
+    }
+
+    @PostMapping("/review/classifier/{id}")
+    public ResponseEntity<Review> updateClassifier(@PathVariable("id") Integer id, @RequestBody ClassifierDTO classifier){
+        System.out.println("asdasas");
+        Review review = this.graphicsService.updateClassifier(id, classifier);
+
+        return ResponseEntity.ok().body(review);
+    }
+
+    @PutMapping("/update/{revid}/{sentid}")
+    public ResponseEntity<Review> updateReview(@PathVariable(value = "revid") Integer reviewId,
+                                       @PathVariable(value = "sentid") String sentimentId) {
+        Review review = this.graphicsService.updateReview(reviewId, sentimentId);
+        return ResponseEntity.ok().body(review);
+    }
+
+    @PostMapping("/report/log")
+    public ResponseEntity<Report> createReport(@RequestBody Report report) {
+        Report savedGraphic = graphicsService.saveReport(report);
+        return ResponseEntity.ok(savedGraphic);
+    }
 }
-
-

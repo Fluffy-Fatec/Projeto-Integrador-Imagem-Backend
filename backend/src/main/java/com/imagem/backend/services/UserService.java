@@ -10,25 +10,23 @@ import com.imagem.backend.exceptions.UserAlreadyExistException;
 import com.imagem.backend.exceptions.UserNotAuthenticated;
 import com.imagem.backend.exceptions.UserNotExist;
 import com.imagem.backend.infra.ext.BlacklistFactory;
+import com.imagem.backend.infra.ext.LogProducerService;
 import com.imagem.backend.infra.security.UserSession;
 import com.imagem.backend.repositories.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Slf4j
 @Service
-public class UserService {
+public class UserService extends LogProducerService {
 
     private final UserRepository userRepository;
 
@@ -48,7 +46,8 @@ public class UserService {
 
     public UserService(UserRepository userRepository, InviteRepository inviteRepository, UserSession userSession,
                        FieldChangeRepository fieldChangeRepository, NotificationRepository notificationRepository,
-                       BlacklistFactory blacklistFactory, StatusTermoRepository statusTermoRepository, NotificationTermRepository notificationTermRepository) {
+                       BlacklistFactory blacklistFactory, StatusTermoRepository statusTermoRepository, NotificationTermRepository notificationTermRepository
+                       ) {
         this.userRepository = userRepository;
         this.inviteRepository = inviteRepository;
         this.userSession = userSession;
@@ -85,9 +84,14 @@ public class UserService {
         newUser.setCelular(dto.celular());
 
         log.info("Salvando novo usuário...");
-        this.userRepository.save(newUser);
+        User user = this.userRepository.saveAndFlush(newUser);
 
         log.info("Deletando o convite utilizado pelo usuário...");
+        LogSender logObject = new LogSender();
+        logObject.setUsuario(new UserLog(newUser.getNome(), user.getId()));
+        logObject.setRegistro("Foi criado um novo usuario");
+        sendMessage(logObject);
+
         // this.inviteRepository.delete(invite);
     }
 
@@ -106,6 +110,11 @@ public class UserService {
         log.info("Salvando a nova senha do usuário...");
         this.userRepository.save(user);
         log.info("Salva a nova senha do usuário...");
+
+        LogSender logObject = new LogSender();
+        logObject.setUsuario(new UserLog(user.getNome(), user.getId()));
+        logObject.setRegistro("O usuario alterou a senha com sucesso");
+        sendMessage(logObject);
 
     }
 
@@ -148,6 +157,12 @@ public class UserService {
             fieldChangeRepository.save(fieldChange);
             log.info("Solicitação de ateração dos campos enviada...");
         }
+
+        LogSender logObject = new LogSender();
+        logObject.setUsuario(new UserLog(user.getNome(), user.getId()));
+        logObject.setRegistro("O usuario solicitou a alteracao de seus dados");
+        sendMessage(logObject);
+
     }
 
     public void updateUserToApprove(UserUpdateApproveRequestDTO dto) throws ParseException {
@@ -163,6 +178,10 @@ public class UserService {
 
         Date parsedDate = sdf.parse(formattedTimestampString);
         Timestamp formattedTimestamp = new Timestamp(parsedDate.getTime());
+
+
+        LogSender logObject = new LogSender();
+        logObject.setUsuario(new UserLog(userLogged.getNome(), userLogged.getId()));
 
         log.info("Verificando o status da atualizacao...");
         if(dto.approve().equals(StatusFieldChange.APROVADO.getStatus())){
@@ -188,6 +207,9 @@ public class UserService {
             log.info("Salvando a alteracao...");
             fieldChangeRepository.save(fieldChange);
 
+            logObject.setRegistro("O usuario aceitou alteracao de dados com sucesso");
+            sendMessage(logObject);
+
         }else{
 
             log.info("Rejeitando a alteracao...");
@@ -198,7 +220,11 @@ public class UserService {
 
             log.info("Salvando a rejeicao da alteracao...");
             fieldChangeRepository.save(fieldChange);
+
+            logObject.setRegistro("O usuario rejeitou alteracao de dados");
+            sendMessage(logObject);
         }
+
     }
 
     public List<RespondeListFieldChangeDTO> listUpdateSolicitaions(){
@@ -260,6 +286,12 @@ public class UserService {
                 listUpdateFieldChange.add(fieldChangeDTO);
             }
         }
+        User user = userSession.userLogged();
+        LogSender logObject = new LogSender();
+        logObject.setUsuario(new UserLog(user.getNome(), user.getId()));
+        logObject.setRegistro("O usuario solicitou a listagem de todos os usuarios");
+        sendMessage(logObject);
+
 
         return listUpdateFieldChange;
     }
@@ -302,6 +334,12 @@ public class UserService {
         usersResponseDTO.setEmail(listUser.getEmail());
         usersResponseDTO.setUserRole(listUser.getRole());
         usersResponseDTO.setCreation_date(listUser.getCreationdate());
+
+        User user = userSession.userLogged();
+        LogSender logObject = new LogSender();
+        logObject.setUsuario(new UserLog(user.getNome(), user.getId()));
+        logObject.setRegistro("O usuario solicitou os dados do usuario com id = " + listUser.getId());
+        sendMessage(logObject);
 
         return usersResponseDTO;
     }
@@ -354,12 +392,15 @@ public class UserService {
 
         this.userRepository.delete(user);
 
-//        if(blacklist.equals("s")){
-//            this.blacklistFactory.salvar(id);
-//        }
+        this.blacklistFactory.salvar(id);
+
+        User userlogged = userSession.userLogged();
+
+        LogSender logObject = new LogSender();
+        logObject.setUsuario(new UserLog(userlogged.getNome(), userlogged.getId()));
+        logObject.setRegistro("Foi deletado o usuario com id = " + id);
+        sendMessage(logObject);
     }
-
-
     public void updateRole(UpdateUserRoleRequestDTO roleRequestDTO){
 
         log.info("Buscando pelo id do usuario...");
@@ -373,8 +414,13 @@ public class UserService {
             log.info("Nova role de admin do usuario...");
             user.setRole(UserRole.ADMIN);
         }
-
         this.userRepository.save(user);
+
+        User userlogged = userSession.userLogged();
+        LogSender logObject = new LogSender();
+        logObject.setUsuario(new UserLog(userlogged.getNome(), userlogged.getId()));
+        logObject.setRegistro("Foi alterado a role do usuario com id = " + user.getId());
+        sendMessage(logObject);
     }
 
     public UpdateUserRequestDTO userLogged(){
@@ -419,6 +465,11 @@ public class UserService {
                 responseNotificationDTO.add(responseNotification);
             }
         }
+
+        LogSender logObject = new LogSender();
+        logObject.setUsuario(new UserLog(userLogged.getNome(), userLogged.getId()));
+        logObject.setRegistro("Foi solicitado as notificacoes");
+        sendMessage(logObject);
         return responseNotificationDTO;
     }
 
@@ -427,6 +478,12 @@ public class UserService {
 
         notification.setFlagNotificacao(FlagNotificacaoEnum.VIST.getStatus());
 
+        User userLogged = userSession.userLogged();
         this.notificationRepository.save(notification);
+
+        LogSender logObject = new LogSender();
+        logObject.setUsuario(new UserLog(userLogged.getNome(), userLogged.getId()));
+        logObject.setRegistro("O usuario visualizou as notificacoes");
+        sendMessage(logObject);
     }
 }
