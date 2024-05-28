@@ -9,7 +9,6 @@ import com.imagem.backend.infra.ext.LogProducerService;
 import com.imagem.backend.infra.security.UserSession;
 import com.imagem.backend.repositories.*;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -34,8 +33,7 @@ public class StatusTermService extends LogProducerService {
 
     public StatusTermService(StatusTermoRepository statusTermoRepository, TermRepository termRepository,
                              UserRepository userRepository, NotificationTermRepository notificationTermRepository,
-                             UserSession userSession, TermFunctionRepository termFunctionRepository,
-                             KafkaTemplate<String, Serializable> kafkaTemplate) {
+                             UserSession userSession, TermFunctionRepository termFunctionRepository) {
         this.statusTermoRepository = statusTermoRepository;
         this.termRepository = termRepository;
         this.userRepository = userRepository;
