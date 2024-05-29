@@ -3,8 +3,13 @@ package com.imagem.backend.services;
 
 import com.imagem.backend.domain.Report;
 import com.imagem.backend.domain.Review;
+import com.imagem.backend.domain.User;
 import com.imagem.backend.dtos.ClassifierDTO;
+import com.imagem.backend.dtos.LogSender;
+import com.imagem.backend.dtos.UserLog;
 import com.imagem.backend.exceptions.ReviewNotFound;
+import com.imagem.backend.infra.ext.LogProducerService;
+import com.imagem.backend.infra.security.UserSession;
 import com.imagem.backend.repositories.ReportRepository;
 import com.imagem.backend.repositories.ReviewRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -22,15 +27,18 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class GraphicsService {
+public class GraphicsService extends LogProducerService{
 
     private final ReviewRepository reviewRepository;
 
     private final ReportRepository reportRepository;
 
-    public GraphicsService(ReviewRepository reviewRepository, ReportRepository reportRepository) {
+    private final UserSession userSession;
+
+    public GraphicsService(ReviewRepository reviewRepository, ReportRepository reportRepository, UserSession userSession) {
         this.reviewRepository = reviewRepository;
         this.reportRepository = reportRepository;
+        this.userSession = userSession;
     }
 
     public List<Review> listByDatasource(String origin){
@@ -141,6 +149,14 @@ public class GraphicsService {
         log.info("Realizando busca de review.");
         Review review = this.reviewRepository.findById(reviewId).orElseThrow();
 
+        log.info("Buscando o usuário logado...");
+        User userLogged = userSession.userLogged();
+
+        LogSender logObject = new LogSender();
+        logObject.setUsuario(new UserLog(userLogged.getNome(), userLogged.getId()));
+        logObject.setRegistro("The user deleted a review with the id equal to: " + review.getId());
+        sendMessage(logObject);
+
         log.info("Realizando delete de review.");
         this.reviewRepository.delete(review);
     }
@@ -153,17 +169,42 @@ public class GraphicsService {
         review.setSentimentoPredito(sentimentId);
         this.reviewRepository.save(review);
 
+        log.info("Buscando o usuário logado...");
+        User userLogged = userSession.userLogged();
+
+        LogSender logObject = new LogSender();
+        logObject.setUsuario(new UserLog(userLogged.getNome(), userLogged.getId()));
+        logObject.setRegistro("The user updated a review with a new sentiment and the id equal to: " + review.getId());
+        sendMessage(logObject);
+
         return review;
     }
     public Report saveReport(Report report) {
         log.info("Realizando salvamento de report.");
         report.setData(new Timestamp(System.currentTimeMillis()));
+
+        log.info("Buscando o usuário logado...");
+        User userLogged = userSession.userLogged();
+
+        LogSender logObject = new LogSender();
+        logObject.setUsuario(new UserLog(userLogged.getNome(), userLogged.getId()));
+        logObject.setRegistro("The user save a report with the id equal to: " + report.getId());
+        sendMessage(logObject);
+
         return reportRepository.save(report);
     }
 
     public Review updateClassifier(Integer id, ClassifierDTO classifier){
         log.info("Realizando busca de review.");
         Review review = this.reviewRepository.findById(id).orElseThrow(ReviewNotFound::new);
+
+        log.info("Buscando o usuário logado...");
+        User userLogged = userSession.userLogged();
+
+        LogSender logObject = new LogSender();
+        logObject.setUsuario(new UserLog(userLogged.getNome(), userLogged.getId()));
+        logObject.setRegistro("The user updated a review with a new classifiier and the id equal to: " + review.getId());
+        sendMessage(logObject);
 
         log.info("Salvando a alteracao do review.");
         review.setClassifier(classifier.getClassifier());
