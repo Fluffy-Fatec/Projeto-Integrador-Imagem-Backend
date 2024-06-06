@@ -24,14 +24,12 @@ import java.io.InputStreamReader;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @Service
@@ -227,44 +225,60 @@ public class GraphicsService extends LogProducerService{
     public void uploadFile(MultipartFile file){
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
-            String line;
-            String datasource = null;
-            while ((line = br.readLine()) != null) {
-                String[] data = line.split(";");
 
-                String sentimento = integrationAI.getSentiment(data[0]); // Ajuste aqui de acordo com a posição da coluna predictions
+            List<Review> reviews = new ArrayList<>();
+            String datasource = null;
+            br.readLine();
+            String line;
+
+            while (!(line = br.readLine()).isEmpty()) {
+
+                String[] data = line.split(",");
+
+                if(data.length < 1){
+                    this.reviewRepository.saveAll(reviews);
+
+                    log.info("Buscando o usuário logado...");
+                    User user = userSession.userLogged();
+                    LogSender logObject = new LogSender();
+                    logObject.setUsuario(new UserLog(user.getNome(), user.getId()));
+                    logObject.setRegistro("User uploaded a new datasource " + datasource);
+                    sendMessage(logObject);
+                    return;
+                }
 
                 Review review = new Review();
-                review.setReviewCommentMessage(data[0]);
-                review.setReviewScore(data[1]);
+                System.out.println("review id " + data[0]);
+                review.setId(data[0]);
+                review.setReviewCommentMessage(data[1]);
+                review.setReviewScore(data[2]);
+                System.out.println("sentiment " + data[1]);
+                String sentimento = integrationAI.getSentiment(data[1]); // Ajuste aqui de acordo com a posição da coluna predictions
                 review.setSentimentoPredito(sentimento);
-                review.setGeolocationLat(data[2]);
-                review.setGeolocationLng(data[3]);
-                review.setGeolocationState(data[4]);
-                review.setGeolocationCountry(data[5]);
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date parsedDate = dateFormat.parse(data[6]);
+                review.setGeolocationLat(data[4]);
+                review.setGeolocationLng(data[5]);
+                review.setGeolocationState(data[6]);
+                review.setGeolocationCountry(data[7]);
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm");
+                Date parsedDate = dateFormat.parse(data[8]);
                 Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
                 review.setReviewCreationDate(timestamp);
 
-                review.setOrigin(data[7]);
+                review.setOrigin(data[9]);
 
-                review.setGeolocation(data[8]);
+                review.setGeolocation(data[10]);
 
                 datasource = review.getOrigin();
-
-                this.reviewRepository.save(review);
+                reviews.add(review);
             }
-            log.info("Buscando o usuário logado...");
-            User user = userSession.userLogged();
-            LogSender logObject = new LogSender();
-            logObject.setUsuario(new UserLog(user.getNome(), user.getId()));
-            logObject.setRegistro("User uploaded a new datasource " + datasource);
-            sendMessage(logObject);
+
+
         } catch (IOException e) {
             throw new ErrorUpdateCsv();
         } catch (ParseException a) {
             throw new RuntimeException(a);
         }
+
+
     }
 }

@@ -34,7 +34,7 @@ public class IntegrationAI {
             ObjectMapper mapper = new ObjectMapper();
             SentimentResponse sentimentResponse = mapper.readValue(response.body(), SentimentResponse.class);
 
-            System.out.println(sentimentResponse.getPrediction());
+            System.out.println("sentimento "+sentimentResponse.getPrediction());
             return sentimentResponse.getPrediction();
         } catch (Exception e) {
             log.error("Erro ao fazer a requisição para obter o sentimento", e);
