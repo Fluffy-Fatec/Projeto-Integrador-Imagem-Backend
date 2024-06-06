@@ -1,6 +1,11 @@
 package com.imagem.backend.services;
 
 import com.imagem.backend.domain.Review;
+import com.imagem.backend.domain.User;
+import com.imagem.backend.dtos.LogSender;
+import com.imagem.backend.dtos.UserLog;
+import com.imagem.backend.infra.ext.LogProducerService;
+import com.imagem.backend.infra.security.UserSession;
 import com.imagem.backend.repositories.ReviewRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,11 +20,14 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class ReportService {
+public class ReportService extends LogProducerService {
     private final ReviewRepository reviewRepository;
 
-    public ReportService(ReviewRepository reviewRepository) {
+    private final UserSession userSession;
+
+    public ReportService(ReviewRepository reviewRepository, UserSession userSession) {
         this.reviewRepository = reviewRepository;
+        this.userSession = userSession;
     }
 
     public List<Review> listReviewByFilters(String origin, String startDateString, String endDateString, String state, String country, String sentimentoPredito) {
