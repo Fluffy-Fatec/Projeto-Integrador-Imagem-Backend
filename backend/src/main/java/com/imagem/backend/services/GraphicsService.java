@@ -216,6 +216,7 @@ public class GraphicsService extends LogProducerService{
         logObject.setRegistro("The user updated a review with a new classifiier and the id equal to: " + review.getId());
         sendMessage(logObject);
 
+
         log.info("Salvando a alteracao do review.");
         review.setClassifier(classifier.getClassifier());
         this.reviewRepository.save(review);
