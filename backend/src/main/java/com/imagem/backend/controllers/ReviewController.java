@@ -11,6 +11,7 @@ import com.imagem.backend.services.ReportService;
 import com.imagem.backend.services.WordService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -185,5 +186,11 @@ public class ReviewController {
     public ResponseEntity<Report> createReport(@RequestBody Report report) {
         Report savedGraphic = graphicsService.saveReport(report);
         return ResponseEntity.ok(savedGraphic);
+    }
+
+    @PostMapping("/upload")
+    public ResponseEntity upload(@RequestParam("file") MultipartFile file) {
+        graphicsService.uploadFile(file);
+        return ResponseEntity.ok().body(new GlobalResponseDTO("Upload com sucesso!"));
     }
 }

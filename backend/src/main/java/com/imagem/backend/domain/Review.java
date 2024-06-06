@@ -15,7 +15,6 @@ import java.sql.Timestamp;
 public class Review {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_id")
     private String id;
 

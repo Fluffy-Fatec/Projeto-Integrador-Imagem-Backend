@@ -2,7 +2,6 @@ package com.imagem.deleteuser.controller;
 
 import com.imagem.deleteuser.collections.Log;
 import com.imagem.deleteuser.dto.BlackListDTO;
-import com.imagem.deleteuser.dto.LogSender;
 import com.imagem.deleteuser.repository.LogRepository;
 import com.imagem.deleteuser.service.BlacklistService;
 import org.springframework.web.bind.annotation.PostMapping;
