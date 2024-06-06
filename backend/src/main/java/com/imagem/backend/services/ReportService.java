@@ -109,11 +109,6 @@ public class ReportService extends LogProducerService {
                         .append(review.getReviewCreationDate().toString()).append(",")
                         .append(review.getCreationdate().toString()).append("\n");
             }
-            User userLogged = userSession.userLogged();
-            LogSender logObject = new LogSender();
-            logObject.setUsuario(new UserLog(userLogged.getNome(), userLogged.getId()));
-            logObject.setRegistro("User exported a CSV report from datasource: "+ datasource);
-            sendMessage(logObject);
         } catch (IOException e) {
             e.printStackTrace();
         }

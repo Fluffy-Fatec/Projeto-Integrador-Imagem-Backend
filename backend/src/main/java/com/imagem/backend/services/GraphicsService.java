@@ -15,6 +15,7 @@ import com.imagem.backend.infra.ext.LogProducerService;
 import com.imagem.backend.infra.security.UserSession;
 import com.imagem.backend.repositories.ReportRepository;
 import com.imagem.backend.repositories.ReviewRepository;
+import com.imagem.backend.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -44,11 +45,14 @@ public class GraphicsService extends LogProducerService{
 
     private final IntegrationAI integrationAI;
 
-    public GraphicsService(ReviewRepository reviewRepository, ReportRepository reportRepository, UserSession userSession, IntegrationAI integrationAI) {
+    private final UserRepository userRepository;
+
+    public GraphicsService(ReviewRepository reviewRepository, ReportRepository reportRepository, UserSession userSession, IntegrationAI integrationAI, UserRepository userRepository) {
         this.reviewRepository = reviewRepository;
         this.reportRepository = reportRepository;
         this.userSession = userSession;
         this.integrationAI = integrationAI;
+        this.userRepository = userRepository;
     }
 
     public List<Review> listByDatasource(String origin){
@@ -194,11 +198,11 @@ public class GraphicsService extends LogProducerService{
         report.setData(new Timestamp(System.currentTimeMillis()));
 
         log.info("Buscando o usuário logado...");
-        User userLogged = userSession.userLogged();
+        User userLogged = (User) userRepository.findByUsername(report.getUserName());
 
         LogSender logObject = new LogSender();
         logObject.setUsuario(new UserLog(userLogged.getNome(), userLogged.getId()));
-        logObject.setRegistro("The user save a report with the id equal to: " + report.getId());
+        logObject.setRegistro("The user generate a report from graphic " +report.getGraphicTitle() +" with id equal to: " + report.getId());
         sendMessage(logObject);
 
         return reportRepository.save(report);
