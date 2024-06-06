@@ -273,6 +273,12 @@ public class GraphicsService extends LogProducerService{
                 reviews.add(review);
             }
 
+            User userLogged = userSession.userLogged();
+            LogSender logObject = new LogSender();
+            logObject.setUsuario(new UserLog(userLogged.getNome(), userLogged.getId()));
+            logObject.setRegistro("User uploaded a datasource with the name: "+ datasource);
+            sendMessage(logObject);
+
 
         } catch (IOException e) {
             throw new ErrorUpdateCsv();

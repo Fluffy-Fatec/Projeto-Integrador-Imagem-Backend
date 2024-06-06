@@ -83,7 +83,7 @@ public class StatusTermService extends LogProducerService {
 
         LogSender logObject = new LogSender();
         logObject.setUsuario(new UserLog(notificationTerm.getUser().getNome(), notificationTerm.getUser().getId()));
-        logObject.setRegistro("O usuario visualizou a notificacao do termo de aceite com id = " + notificationTerm.getId());
+        logObject.setRegistro("The user viewed the notification of the acceptance term with id = " + notificationTerm.getId());
         sendMessage(logObject);
     }
 
@@ -109,7 +109,7 @@ public class StatusTermService extends LogProducerService {
             statusTerm.setUser(user);
             statusTerm.setTermo(termo);
             this.statusTermoRepository.save(statusTerm);
-            logObject.setRegistro("O usuario "+termRequest+" o termo");
+            logObject.setRegistro("The user "+termRequest+" term");
             sendMessage(logObject);
             return;
         }
@@ -126,7 +126,7 @@ public class StatusTermService extends LogProducerService {
                 statusTerm.setTermoFuncao(termFunction);
                 this.statusTermoRepository.save(statusTerm);
             }
-            logObject.setRegistro("O usuario aceitou o termo e nao aceitou funcionalidade");
+            logObject.setRegistro("The user accepted the term with id = " + termo.getId() + " and accepted the following features with id's= " + functionsId);
             sendMessage(logObject);
             return;
         }
@@ -173,7 +173,7 @@ public class StatusTermService extends LogProducerService {
         }
 
 
-        logObject.setRegistro("O usuario aceitou o termo com id = " + termo.getId() + " e aceitou as seguintes funcionalidades com os id's= " + functionsId);
+        logObject.setRegistro("The user accepted the term with id = " + termo.getId() + " and accepted the following features with id's= " + functionsId);
         sendMessage(logObject);
     }
 }
