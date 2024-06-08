@@ -31,6 +31,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/auth/invite").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/auth/update/pass").hasRole("USER")
                         .requestMatchers(HttpMethod.PUT, "/auth/update/user").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/auth/list/count/user").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/auth/update/user/approve").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/auth/update/user/role").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/auth/update/user/list").hasRole("ADMIN")

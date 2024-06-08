@@ -173,4 +173,11 @@ public class UserController {
         return ResponseEntity.ok().body(new GlobalResponseDTO("Atualizacao de acesso realizada"));
     }
 
+    @GetMapping("/list/count/user")
+    public ResponseEntity<Integer> countUsersActive(){
+
+        Integer countUser = this.userService.countUser();
+
+        return ResponseEntity.ok().body(countUser);
+    }
 }
