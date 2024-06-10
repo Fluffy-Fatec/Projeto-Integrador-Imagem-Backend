@@ -2,6 +2,7 @@ package com.imagem.deleteuser.controller;
 
 import com.imagem.deleteuser.collections.Log;
 import com.imagem.deleteuser.dto.BlackListDTO;
+import com.imagem.deleteuser.dto.LogsGroupByDay;
 import com.imagem.deleteuser.repository.LogRepository;
 import com.imagem.deleteuser.service.BlacklistService;
 import com.imagem.deleteuser.service.LogService;
@@ -9,8 +10,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequestMapping
 @RestController
@@ -86,5 +90,31 @@ public class Controller {
         Integer listAllLogs = logRepository.findByCreationDateRegex(dataFormatada).size();
 
         return ResponseEntity.ok().body(listAllLogs);
+    }
+
+    @GetMapping("/log/group")
+    public ResponseEntity<List<LogsGroupByDay>> groupLogsByDay() {
+        List<Log> logs = logRepository.findAll();
+
+        // Agrupando os logs por data de criação (apenas a parte da data, sem a hora) e contando os registros por dia
+        Map<String, Long> groupedLogs = logs.stream()
+                .collect(Collectors.groupingBy(log -> {
+                    // Extrair a data no formato YYYY-MM-DD
+                    String datePart = extractDate(log.getCreationDate());
+                    return datePart;
+                }, Collectors.counting()));
+
+        // Convertendo o Map em uma lista de LogsGroupByDay
+        List<LogsGroupByDay> logsGroupByDayList = groupedLogs.entrySet().stream()
+                .map(entry -> new LogsGroupByDay(entry.getKey(), entry.getValue().intValue()))
+                .collect(Collectors.toList());
+
+
+        return ResponseEntity.ok().body(logsGroupByDayList);
+    }
+
+    public static String extractDate(String dateTime) {
+        LocalDateTime localDateTime = LocalDateTime.parse(dateTime, DateTimeFormatter.ISO_DATE_TIME);
+        return localDateTime.toLocalDate().toString();  // Extrai apenas a parte da data
     }
 }
