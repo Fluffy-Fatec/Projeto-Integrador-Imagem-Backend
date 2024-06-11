@@ -253,25 +253,23 @@ public class GraphicsService extends LogProducerService{
                 }
 
                 Review review = new Review();
-                System.out.println("review id " + data[0]);
-                review.setId(data[0]);
-                review.setReviewCommentMessage(data[1]);
-                review.setReviewScore(data[2]);
-                System.out.println("sentiment " + data[1]);
-                String sentimento = integrationAI.getSentiment(data[1]); // Ajuste aqui de acordo com a posição da coluna predictions
+                review.setReviewCommentMessage(data[0]);
+                review.setReviewScore(data[1]);
+                System.out.println("sentiment " + data[0]);
+                String sentimento = integrationAI.getSentiment(data[0]); // Ajuste aqui de acordo com a posição da coluna predictions
                 review.setSentimentoPredito(sentimento);
-                review.setGeolocationLat(data[4]);
-                review.setGeolocationLng(data[5]);
-                review.setGeolocationState(data[6]);
-                review.setGeolocationCountry(data[7]);
+                review.setGeolocationLat(data[3]);
+                review.setGeolocationLng(data[4]);
+                review.setGeolocationState(data[5]);
+                review.setGeolocationCountry(data[6]);
                 SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm");
-                Date parsedDate = dateFormat.parse(data[8]);
+                Date parsedDate = dateFormat.parse(data[7]);
                 Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
                 review.setReviewCreationDate(timestamp);
 
-                review.setOrigin(data[9]);
+                review.setOrigin(data[8]);
 
-                review.setGeolocation(data[10]);
+                review.setGeolocation(data[9]);
 
                 datasource = review.getOrigin();
                 reviews.add(review);

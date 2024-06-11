@@ -478,4 +478,8 @@ public class UserService extends LogProducerService {
         logObject.setRegistro("The user viewed the notifications");
         sendMessage(logObject);
     }
+
+    public Integer countUser(){
+        return listAllUsers().size();
+    }
 }

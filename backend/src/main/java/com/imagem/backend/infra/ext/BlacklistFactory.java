@@ -4,7 +4,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-@Component // Substitui @Service (Spring 6.0)
+@Component
 public class BlacklistFactory {
 
 
