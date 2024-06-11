@@ -94,7 +94,7 @@ public class Controller {
 
     @GetMapping("/log/group")
     public ResponseEntity<List<LogsGroupByDay>> groupLogsByDay() {
-        List<Log> logs = logRepository.findAll();
+        List<Log> logs = logRepository.findByRegistroRegex("user has been created");
 
         // Agrupando os logs por data de criação (apenas a parte da data, sem a hora) e contando os registros por dia
         Map<String, Long> groupedLogs = logs.stream()
