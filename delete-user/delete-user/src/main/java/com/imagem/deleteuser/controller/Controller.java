@@ -44,9 +44,9 @@ public class Controller {
     }
 
     @GetMapping("/logged/all")
-    public ResponseEntity<Integer> listAllLogin(){
+    public ResponseEntity<List<Log>> listAllLogin(){
 
-        Integer allLogins = logService.listAllLogin();
+        List<Log> allLogins = logService.listAllLogin();
         return ResponseEntity.ok().body(allLogins);
     }
 

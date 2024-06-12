@@ -186,9 +186,9 @@ public class UserController {
     }
 
     @GetMapping("/logged/all")
-    public ResponseEntity<Integer> countUsersLogged(){
+    public ResponseEntity<List<LogSender>> countUsersLogged(){
 
-        Integer countUserLogged = integrationAI.getAccesTotal();
+        List<LogSender> countUserLogged = integrationAI.getAccesTotal();
 
         return ResponseEntity.ok().body(countUserLogged);
     }

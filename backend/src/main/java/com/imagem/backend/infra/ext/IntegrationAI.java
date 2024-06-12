@@ -1,6 +1,7 @@
 package com.imagem.backend.infra.ext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.imagem.backend.dtos.LogSender;
 import com.imagem.backend.dtos.LogsGroupByDay;
 import com.imagem.backend.dtos.SentimentResponse;
 import com.imagem.backend.exceptions.ErrorSentiment;
@@ -51,7 +52,7 @@ public class IntegrationAI {
     }
 
 
-    public Integer getAccesTotal() {
+    public List<LogSender> getAccesTotal() {
         try {
             // Cria a requisição GET
             HttpRequest request = HttpRequest.newBuilder()
@@ -64,7 +65,7 @@ public class IntegrationAI {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             System.out.println("quantidade "+response);
             ObjectMapper mapper = new ObjectMapper();
-            Integer sentimentResponse = mapper.readValue(response.body(), Integer.class);
+            List<LogSender> sentimentResponse = mapper.readValue(response.body(), List.class);
 
             System.out.println("quantidade "+sentimentResponse);
             return sentimentResponse;
