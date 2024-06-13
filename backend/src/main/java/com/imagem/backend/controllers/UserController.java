@@ -193,6 +193,14 @@ public class UserController {
         return ResponseEntity.ok().body(countUserLogged);
     }
 
+    @GetMapping("/log/list")
+    public ResponseEntity<List<LogSender>> listAllLogs(){
+
+        List<LogSender> countUserLogged = integrationAI.getAllLogs();
+
+        return ResponseEntity.ok().body(countUserLogged);
+    }
+
     @GetMapping("/log/count")
     public ResponseEntity<Integer> countLogToday(){
 

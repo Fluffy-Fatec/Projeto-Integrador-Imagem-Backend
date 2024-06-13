@@ -75,6 +75,29 @@ public class IntegrationAI {
         }
     }
 
+    public List<LogSender> getAllLogs() {
+        try {
+            // Cria a requisição GET
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(API_BASEURL + "/log/list"))
+                    .GET()
+                    .build();
+
+            // Envia a requisição e captura a resposta
+            HttpClient client = HttpClient.newHttpClient();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            ObjectMapper mapper = new ObjectMapper();
+            List<LogSender> sentimentResponse = mapper.readValue(response.body(), List.class);
+
+            System.out.println("quantidade "+sentimentResponse);
+            return sentimentResponse;
+        } catch (Exception e) {
+            log.error("Erro ao fazer a requisição para obter o sentimento", e);
+            throw new ErrorSentiment();
+        }
+    }
+
+
     public Integer getLogToday() {
         try {
             // Cria a requisição GET
