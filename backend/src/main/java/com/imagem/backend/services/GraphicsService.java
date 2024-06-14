@@ -7,7 +7,6 @@ import com.imagem.backend.domain.User;
 import com.imagem.backend.dtos.ClassifierDTO;
 import com.imagem.backend.dtos.LogSender;
 import com.imagem.backend.dtos.UserLog;
-import com.imagem.backend.exceptions.ErrorSentiment;
 import com.imagem.backend.exceptions.ErrorUpdateCsv;
 import com.imagem.backend.exceptions.ReviewNotFound;
 import com.imagem.backend.infra.ext.IntegrationAI;
@@ -27,7 +26,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -236,11 +234,11 @@ public class GraphicsService extends LogProducerService{
             br.readLine();
             String line;
 
-            while (!(line = br.readLine()).isEmpty()) {
+            while (!(line = br.readLine()).isEmpty() || (line = br.readLine()) != null) {
 
                 String[] data = line.split(",");
-
-                if(data.length < 1){
+                System.out.print(line);
+                if(data.length < 1 ){
                     this.reviewRepository.saveAll(reviews);
 
                     log.info("Buscando o usuário logado...");
@@ -256,23 +254,24 @@ public class GraphicsService extends LogProducerService{
                 review.setReviewCommentMessage(data[0]);
                 review.setReviewScore(data[1]);
                 System.out.println("sentiment " + data[0]);
-                String sentimento = integrationAI.getSentiment(data[0]); // Ajuste aqui de acordo com a posição da coluna predictions
+                String sentimento = "11110"; //integrationAI.getSentiment(data[0]); // Ajuste aqui de acordo com a posição da coluna predictions
                 review.setSentimentoPredito(sentimento);
                 review.setGeolocationLat(data[3]);
                 review.setGeolocationLng(data[4]);
                 review.setGeolocationState(data[5]);
                 review.setGeolocationCountry(data[6]);
                 SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm");
-                Date parsedDate = dateFormat.parse(data[7]);
+                Date parsedDate = dateFormat.parse(data[6]);
                 Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
                 review.setReviewCreationDate(timestamp);
 
-                review.setOrigin(data[8]);
+                review.setOrigin(data[7]);
 
-                review.setGeolocation(data[9]);
+                review.setGeolocation(data[8]);
 
                 datasource = review.getOrigin();
                 reviews.add(review);
+                this.reviewRepository.saveAndFlush(review);
             }
 
             User userLogged = userSession.userLogged();
@@ -286,6 +285,7 @@ public class GraphicsService extends LogProducerService{
             throw new ErrorUpdateCsv();
         } catch (ParseException a) {
             throw new RuntimeException(a);
+        } catch (NullPointerException ignored) {
         }
 
 
