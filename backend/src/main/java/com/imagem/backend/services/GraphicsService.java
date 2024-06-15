@@ -17,6 +17,7 @@ import com.imagem.backend.repositories.ReviewRepository;
 import com.imagem.backend.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import java.util.Date;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -236,7 +237,7 @@ public class GraphicsService extends LogProducerService{
 
             while (!(line = br.readLine()).isEmpty() || (line = br.readLine()) != null) {
 
-                String[] data = line.split(",");
+                String[] data = line.split(";");
                 System.out.print(line);
                 if(data.length < 1 ){
                     this.reviewRepository.saveAll(reviews);
@@ -260,7 +261,7 @@ public class GraphicsService extends LogProducerService{
                 review.setGeolocationLng(data[4]);
                 review.setGeolocationState(data[5]);
                 review.setGeolocationCountry(data[6]);
-                SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSSSSS");
                 Date parsedDate = dateFormat.parse(data[6]);
                 Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
                 review.setReviewCreationDate(timestamp);
