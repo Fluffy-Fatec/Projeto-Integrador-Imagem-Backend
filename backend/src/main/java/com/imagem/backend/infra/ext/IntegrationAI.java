@@ -1,6 +1,7 @@
 package com.imagem.backend.infra.ext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.imagem.backend.dtos.LogSender;
 import com.imagem.backend.dtos.LogsGroupByDay;
 import com.imagem.backend.dtos.SentimentResponse;
 import com.imagem.backend.exceptions.ErrorSentiment;
@@ -51,7 +52,7 @@ public class IntegrationAI {
     }
 
 
-    public Integer getAccesTotal() {
+    public List<LogSender> getAccesTotal() {
         try {
             // Cria a requisição GET
             HttpRequest request = HttpRequest.newBuilder()
@@ -64,7 +65,7 @@ public class IntegrationAI {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             System.out.println("quantidade "+response);
             ObjectMapper mapper = new ObjectMapper();
-            Integer sentimentResponse = mapper.readValue(response.body(), Integer.class);
+            List<LogSender> sentimentResponse = mapper.readValue(response.body(), List.class);
 
             System.out.println("quantidade "+sentimentResponse);
             return sentimentResponse;
@@ -73,6 +74,29 @@ public class IntegrationAI {
             throw new ErrorSentiment();
         }
     }
+
+    public List<LogSender> getAllLogs() {
+        try {
+            // Cria a requisição GET
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(API_BASEURL + "/log/list"))
+                    .GET()
+                    .build();
+
+            // Envia a requisição e captura a resposta
+            HttpClient client = HttpClient.newHttpClient();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            ObjectMapper mapper = new ObjectMapper();
+            List<LogSender> sentimentResponse = mapper.readValue(response.body(), List.class);
+
+            System.out.println("quantidade "+sentimentResponse);
+            return sentimentResponse;
+        } catch (Exception e) {
+            log.error("Erro ao fazer a requisição para obter o sentimento", e);
+            throw new ErrorSentiment();
+        }
+    }
+
 
     public Integer getLogToday() {
         try {

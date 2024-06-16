@@ -13,7 +13,7 @@ public class LogService {
 
     private final LogRepository logRepository;
 
-    public Integer listAllLogin(){
-        return logRepository.findByRegistroRegex("logged").size();
+    public List<Log> listAllLogin(){
+        return logRepository.findByRegistroRegex("logged");
     }
 }
