@@ -255,7 +255,7 @@ public class GraphicsService extends LogProducerService{
                 review.setReviewCommentMessage(data[0]);
                 review.setReviewScore(data[1]);
                 System.out.println("sentiment " + data[0]);
-                String sentimento = "11110"; //integrationAI.getSentiment(data[0]); // Ajuste aqui de acordo com a posição da coluna predictions
+                String sentimento = integrationAI.getSentiment(data[0]); // Ajuste aqui de acordo com a posição da coluna predictions
                 review.setSentimentoPredito(sentimento);
                 review.setGeolocationLat(data[3]);
                 review.setGeolocationLng(data[4]);
