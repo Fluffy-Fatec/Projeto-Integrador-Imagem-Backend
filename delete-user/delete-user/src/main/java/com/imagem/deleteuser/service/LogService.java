@@ -5,6 +5,7 @@ import com.imagem.deleteuser.repository.LogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -13,7 +14,7 @@ public class LogService {
 
     private final LogRepository logRepository;
 
-    public List<Log> listAllLogin(){
-        return logRepository.findByRegistroRegex("logged");
+    public ArrayList<Log> listAllLogin(){
+        return (ArrayList<Log>) logRepository.findByRegistroRegex("logged");
     }
 }

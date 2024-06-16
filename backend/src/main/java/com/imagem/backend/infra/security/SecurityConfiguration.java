@@ -42,6 +42,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/auth/logged/all").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/auth/log/count").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/auth/log/list").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/auth/log/login").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/auth/log/group").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/auth/delete/user/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/graphics/list").hasRole("USER")
