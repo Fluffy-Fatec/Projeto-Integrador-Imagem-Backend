@@ -22,28 +22,28 @@ import java.util.List;
 @Service
 public class IntegrationAI {
 
-    private static final String API_URL = "http://localhost:8082/predict?text=";
+    private static final String API_URL = "http://localhost:8082/predict";
 
     private static final String API_BASEURL = "http://localhost:8081";
 
     public String getSentiment(String sentiment) {
         try {
-            String encodedSentiment = Base64.getUrlEncoder().encodeToString(sentiment.getBytes(StandardCharsets.UTF_8));
+            String jsonBody = "{\"comment\": \"" + sentiment + "\"}";
 
-            // Cria a requisição GET
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(API_URL + encodedSentiment))
-                    .GET()
+                    .uri(URI.create(API_URL))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                     .build();
 
-            // Envia a requisição e captura a resposta
             HttpClient client = HttpClient.newHttpClient();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
+            // Mapeia a resposta JSON para um objeto Java
             ObjectMapper mapper = new ObjectMapper();
             SentimentResponse sentimentResponse = mapper.readValue(response.body(), SentimentResponse.class);
 
-            System.out.println("sentimento "+sentimentResponse.getPrediction());
+            System.out.println("Sentimento: " + sentimentResponse.getPrediction());
             return sentimentResponse.getPrediction();
         } catch (Exception e) {
             log.error("Erro ao fazer a requisição para obter o sentimento", e);
