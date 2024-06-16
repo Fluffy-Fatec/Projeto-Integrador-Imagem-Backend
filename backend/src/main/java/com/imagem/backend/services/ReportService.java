@@ -96,7 +96,7 @@ public class ReportService extends LogProducerService {
             // Escrever as colunas com o cabeçalho verde
             writer.append("id,review_comment_message,review_score,predictions,geolocation_lat,geolocation_lng,geolocation_state,geolocation_country,geolocation_point,origin,review_creation_date,creationdate\n");
             for (Review review : reviews) {
-                writer.append(review.getId()).append(",")
+                writer.append(review.getId().toString()).append(",")
                         .append(review.getReviewCommentMessage()).append(",")
                         .append(review.getReviewScore()).append(",")
                         .append(review.getSentimentoPredito()).append(",")
