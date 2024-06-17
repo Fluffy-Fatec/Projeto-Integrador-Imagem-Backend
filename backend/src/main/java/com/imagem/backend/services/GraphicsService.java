@@ -257,11 +257,11 @@ public class GraphicsService extends LogProducerService{
                 System.out.println("sentiment " + data[0]);
                 String sentimento = integrationAI.getSentiment(data[0]); // Ajuste aqui de acordo com a posição da coluna predictions
                 review.setSentimentoPredito(sentimento);
-                review.setGeolocationLat(data[3]);
-                review.setGeolocationLng(data[4]);
-                review.setGeolocationState(data[5]);
-                review.setGeolocationCountry(data[6]);
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSSSSS");
+                review.setGeolocationLat(data[2]);
+                review.setGeolocationLng(data[3]);
+                review.setGeolocationState(data[4]);
+                review.setGeolocationCountry(data[5]);
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Date parsedDate = dateFormat.parse(data[6]);
                 Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
                 review.setReviewCreationDate(timestamp);
