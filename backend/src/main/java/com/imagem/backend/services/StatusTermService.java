@@ -9,7 +9,6 @@ import com.imagem.backend.infra.ext.LogProducerService;
 import com.imagem.backend.infra.security.UserSession;
 import com.imagem.backend.repositories.*;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -34,8 +33,7 @@ public class StatusTermService extends LogProducerService {
 
     public StatusTermService(StatusTermoRepository statusTermoRepository, TermRepository termRepository,
                              UserRepository userRepository, NotificationTermRepository notificationTermRepository,
-                             UserSession userSession, TermFunctionRepository termFunctionRepository,
-                             KafkaTemplate<String, Serializable> kafkaTemplate) {
+                             UserSession userSession, TermFunctionRepository termFunctionRepository) {
         this.statusTermoRepository = statusTermoRepository;
         this.termRepository = termRepository;
         this.userRepository = userRepository;
@@ -85,7 +83,7 @@ public class StatusTermService extends LogProducerService {
 
         LogSender logObject = new LogSender();
         logObject.setUsuario(new UserLog(notificationTerm.getUser().getNome(), notificationTerm.getUser().getId()));
-        logObject.setRegistro("O usuario visualizou a notificacao do termo de aceite com id = " + notificationTerm.getId());
+        logObject.setRegistro("The user viewed the notification of the acceptance term with id = " + notificationTerm.getId());
         sendMessage(logObject);
     }
 
@@ -111,7 +109,7 @@ public class StatusTermService extends LogProducerService {
             statusTerm.setUser(user);
             statusTerm.setTermo(termo);
             this.statusTermoRepository.save(statusTerm);
-            logObject.setRegistro("O usuario "+termRequest+" o termo");
+            logObject.setRegistro("The user "+termRequest+" term");
             sendMessage(logObject);
             return;
         }
@@ -128,7 +126,7 @@ public class StatusTermService extends LogProducerService {
                 statusTerm.setTermoFuncao(termFunction);
                 this.statusTermoRepository.save(statusTerm);
             }
-            logObject.setRegistro("O usuario aceitou o termo e nao aceitou funcionalidade");
+            logObject.setRegistro("The user accepted the term with id = " + termo.getId() + " and accepted the following features with id's= " + functionsId);
             sendMessage(logObject);
             return;
         }
@@ -175,7 +173,7 @@ public class StatusTermService extends LogProducerService {
         }
 
 
-        logObject.setRegistro("O usuario aceitou o termo com id = " + termo.getId() + " e aceitou as seguintes funcionalidades com os id's= " + functionsId);
+        logObject.setRegistro("The user accepted the term with id = " + termo.getId() + " and accepted the following features with id's= " + functionsId);
         sendMessage(logObject);
     }
 }

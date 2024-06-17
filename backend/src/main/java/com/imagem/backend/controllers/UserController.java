@@ -3,6 +3,7 @@ package com.imagem.backend.controllers;
 
 import com.imagem.backend.domain.User;
 import com.imagem.backend.dtos.*;
+import com.imagem.backend.infra.ext.IntegrationAI;
 import com.imagem.backend.infra.security.TokenService;
 import com.imagem.backend.services.EmailServiceSender;
 import com.imagem.backend.services.StatusTermService;
@@ -34,13 +35,16 @@ public class UserController {
 
     private final StatusTermService statusTermService;
 
-    public UserController(AuthenticationManager authenticationManager, UserService userService, TokenService tokenService, UserServiceValidator userServiceValidator, EmailServiceSender emailServiceSender, StatusTermService statusTermService) {
+    private final IntegrationAI integrationAI;
+
+    public UserController(AuthenticationManager authenticationManager, UserService userService, TokenService tokenService, UserServiceValidator userServiceValidator, EmailServiceSender emailServiceSender, StatusTermService statusTermService, IntegrationAI integrationAI) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.tokenService = tokenService;
         this.userServiceValidator = userServiceValidator;
         this.emailServiceSender = emailServiceSender;
         this.statusTermService = statusTermService;
+        this.integrationAI = integrationAI;
     }
 
 
@@ -171,6 +175,54 @@ public class UserController {
         this.userService.updateNotificationField(id);
 
         return ResponseEntity.ok().body(new GlobalResponseDTO("Atualizacao de acesso realizada"));
+    }
+
+    @GetMapping("/list/count/user")
+    public ResponseEntity<Integer> countUsersActive(){
+
+        Integer countUser = this.userService.countUser();
+
+        return ResponseEntity.ok().body(countUser);
+    }
+
+    @GetMapping("/logged/all")
+    public ResponseEntity<List<LogSender>> countUsersLogged(){
+
+        List<LogSender> countUserLogged = integrationAI.getAccesTotal();
+
+        return ResponseEntity.ok().body(countUserLogged);
+    }
+
+    @GetMapping("/log/list")
+    public ResponseEntity<List<LogSender>> listAllLogs(){
+
+        List<LogSender> countUserLogged = integrationAI.getAllLogs();
+
+        return ResponseEntity.ok().body(countUserLogged);
+    }
+
+    @GetMapping("/log/count")
+    public ResponseEntity<Integer> countLogToday(){
+
+        Integer countUserLogged = integrationAI.getLogToday();
+
+        return ResponseEntity.ok().body(countUserLogged);
+    }
+
+    @GetMapping("/log/group")
+    public ResponseEntity<List<LogsGroupByDay>> groupLogNewUser(){
+
+        List<LogsGroupByDay> logsGroupByDays = integrationAI.getLogNewUser();
+
+        return ResponseEntity.ok().body(logsGroupByDays);
+    }
+
+    @GetMapping("/log/login")
+    public ResponseEntity<List<LogsGroupByDay>> groupLogin(){
+
+        List<LogsGroupByDay> logsGroupByDays = integrationAI.getLogin();
+
+        return ResponseEntity.ok().body(logsGroupByDays);
     }
 
 }

@@ -1,6 +1,11 @@
 package com.imagem.backend.services;
 
 import com.imagem.backend.domain.Review;
+import com.imagem.backend.domain.User;
+import com.imagem.backend.dtos.LogSender;
+import com.imagem.backend.dtos.UserLog;
+import com.imagem.backend.infra.ext.LogProducerService;
+import com.imagem.backend.infra.security.UserSession;
 import com.imagem.backend.repositories.ReviewRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,11 +20,14 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class ReportService {
+public class ReportService extends LogProducerService {
     private final ReviewRepository reviewRepository;
 
-    public ReportService(ReviewRepository reviewRepository) {
+    private final UserSession userSession;
+
+    public ReportService(ReviewRepository reviewRepository, UserSession userSession) {
         this.reviewRepository = reviewRepository;
+        this.userSession = userSession;
     }
 
     public List<Review> listReviewByFilters(String origin, String startDateString, String endDateString, String state, String country, String sentimentoPredito) {
@@ -88,7 +96,7 @@ public class ReportService {
             // Escrever as colunas com o cabeçalho verde
             writer.append("id,review_comment_message,review_score,predictions,geolocation_lat,geolocation_lng,geolocation_state,geolocation_country,geolocation_point,origin,review_creation_date,creationdate\n");
             for (Review review : reviews) {
-                writer.append(review.getId()).append(",")
+                writer.append(review.getId().toString()).append(",")
                         .append(review.getReviewCommentMessage()).append(",")
                         .append(review.getReviewScore()).append(",")
                         .append(review.getSentimentoPredito()).append(",")

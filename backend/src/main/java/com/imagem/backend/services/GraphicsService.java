@@ -3,34 +3,55 @@ package com.imagem.backend.services;
 
 import com.imagem.backend.domain.Report;
 import com.imagem.backend.domain.Review;
+import com.imagem.backend.domain.User;
 import com.imagem.backend.dtos.ClassifierDTO;
+import com.imagem.backend.dtos.LogSender;
+import com.imagem.backend.dtos.UserLog;
+import com.imagem.backend.exceptions.ErrorUpdateCsv;
 import com.imagem.backend.exceptions.ReviewNotFound;
+import com.imagem.backend.infra.ext.IntegrationAI;
+import com.imagem.backend.infra.ext.LogProducerService;
+import com.imagem.backend.infra.security.UserSession;
 import com.imagem.backend.repositories.ReportRepository;
 import com.imagem.backend.repositories.ReviewRepository;
+import com.imagem.backend.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.sql.Timestamp;
 import java.util.Date;
-import java.util.List;
 
-import org.springframework.stereotype.Service;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @Service
 @Slf4j
-public class GraphicsService {
+public class GraphicsService extends LogProducerService{
 
     private final ReviewRepository reviewRepository;
 
     private final ReportRepository reportRepository;
 
-    public GraphicsService(ReviewRepository reviewRepository, ReportRepository reportRepository) {
+    private final UserSession userSession;
+
+    private final IntegrationAI integrationAI;
+
+    private final UserRepository userRepository;
+
+    public GraphicsService(ReviewRepository reviewRepository, ReportRepository reportRepository, UserSession userSession, IntegrationAI integrationAI, UserRepository userRepository) {
         this.reviewRepository = reviewRepository;
         this.reportRepository = reportRepository;
+        this.userSession = userSession;
+        this.integrationAI = integrationAI;
+        this.userRepository = userRepository;
     }
 
     public List<Review> listByDatasource(String origin){
@@ -141,6 +162,14 @@ public class GraphicsService {
         log.info("Realizando busca de review.");
         Review review = this.reviewRepository.findById(reviewId).orElseThrow();
 
+        log.info("Buscando o usuário logado...");
+        User userLogged = userSession.userLogged();
+
+        LogSender logObject = new LogSender();
+        logObject.setUsuario(new UserLog(userLogged.getNome(), userLogged.getId()));
+        logObject.setRegistro("The user deleted a review with the id equal to: " + review.getId());
+        sendMessage(logObject);
+
         log.info("Realizando delete de review.");
         this.reviewRepository.delete(review);
     }
@@ -153,11 +182,28 @@ public class GraphicsService {
         review.setSentimentoPredito(sentimentId);
         this.reviewRepository.save(review);
 
+        log.info("Buscando o usuário logado...");
+        User userLogged = userSession.userLogged();
+
+        LogSender logObject = new LogSender();
+        logObject.setUsuario(new UserLog(userLogged.getNome(), userLogged.getId()));
+        logObject.setRegistro("The user updated a review with a new sentiment and the id equal to: " + review.getId());
+        sendMessage(logObject);
+
         return review;
     }
     public Report saveReport(Report report) {
         log.info("Realizando salvamento de report.");
         report.setData(new Timestamp(System.currentTimeMillis()));
+
+        log.info("Buscando o usuário logado...");
+        User userLogged = (User) userRepository.findByUsername(report.getUserName());
+
+        LogSender logObject = new LogSender();
+        logObject.setUsuario(new UserLog(userLogged.getNome(), userLogged.getId()));
+        logObject.setRegistro("The user generate a report from graphic " +report.getGraphicTitle() +" with id equal to: " + report.getId());
+        sendMessage(logObject);
+
         return reportRepository.save(report);
     }
 
@@ -165,9 +211,84 @@ public class GraphicsService {
         log.info("Realizando busca de review.");
         Review review = this.reviewRepository.findById(id).orElseThrow(ReviewNotFound::new);
 
+        log.info("Buscando o usuário logado...");
+        User userLogged = userSession.userLogged();
+
+        LogSender logObject = new LogSender();
+        logObject.setUsuario(new UserLog(userLogged.getNome(), userLogged.getId()));
+        logObject.setRegistro("The user updated a review with a new classifiier and the id equal to: " + review.getId());
+        sendMessage(logObject);
+
+
         log.info("Salvando a alteracao do review.");
         review.setClassifier(classifier.getClassifier());
         this.reviewRepository.save(review);
         return review;
+    }
+
+    public void uploadFile(MultipartFile file){
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+
+            List<Review> reviews = new ArrayList<>();
+            String datasource = null;
+            br.readLine();
+            String line;
+
+            while (!(line = br.readLine()).isEmpty() || (line = br.readLine()) != null) {
+
+                String[] data = line.split(";");
+                System.out.print(line);
+                if(data.length < 1 ){
+                    this.reviewRepository.saveAll(reviews);
+
+                    log.info("Buscando o usuário logado...");
+                    User user = userSession.userLogged();
+                    LogSender logObject = new LogSender();
+                    logObject.setUsuario(new UserLog(user.getNome(), user.getId()));
+                    logObject.setRegistro("User uploaded a new datasource " + datasource);
+                    sendMessage(logObject);
+                    return;
+                }
+
+                Review review = new Review();
+                review.setReviewCommentMessage(data[0]);
+                review.setReviewScore(data[1]);
+                System.out.println("sentiment " + data[0]);
+                String sentimento = integrationAI.getSentiment(data[0]); // Ajuste aqui de acordo com a posição da coluna predictions
+                review.setSentimentoPredito(sentimento);
+                review.setGeolocationLat(data[2]);
+                review.setGeolocationLng(data[3]);
+                review.setGeolocationState(data[4]);
+                review.setGeolocationCountry(data[5]);
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date parsedDate = dateFormat.parse(data[6]);
+                Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
+                review.setReviewCreationDate(timestamp);
+
+                review.setOrigin(data[7]);
+
+                review.setGeolocation(data[8]);
+
+                datasource = review.getOrigin();
+                reviews.add(review);
+                this.reviewRepository.saveAndFlush(review);
+            }
+
+            User userLogged = userSession.userLogged();
+            LogSender logObject = new LogSender();
+            logObject.setUsuario(new UserLog(userLogged.getNome(), userLogged.getId()));
+            logObject.setRegistro("User uploaded a datasource with the name: "+ datasource);
+            sendMessage(logObject);
+
+
+        } catch (IOException e) {
+            throw new ErrorUpdateCsv();
+        } catch (ParseException a) {
+            throw new RuntimeException(a);
+        } catch (NullPointerException ignored) {
+        }
+
+
     }
 }

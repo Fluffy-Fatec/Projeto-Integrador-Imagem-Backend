@@ -89,7 +89,7 @@ public class UserService extends LogProducerService {
         log.info("Deletando o convite utilizado pelo usuário...");
         LogSender logObject = new LogSender();
         logObject.setUsuario(new UserLog(newUser.getNome(), user.getId()));
-        logObject.setRegistro("Foi criado um novo usuario");
+        logObject.setRegistro("A new user has been created");
         sendMessage(logObject);
 
         // this.inviteRepository.delete(invite);
@@ -113,7 +113,7 @@ public class UserService extends LogProducerService {
 
         LogSender logObject = new LogSender();
         logObject.setUsuario(new UserLog(user.getNome(), user.getId()));
-        logObject.setRegistro("O usuario alterou a senha com sucesso");
+        logObject.setRegistro("The user has successfully changed the password");
         sendMessage(logObject);
 
     }
@@ -125,6 +125,9 @@ public class UserService extends LogProducerService {
 
         log.info("Buscando o usuário logado na base...");
         User user = userRepository.findById(userLogged.getId()).orElseThrow();
+
+        LogSender logObject = new LogSender();
+        logObject.setUsuario(new UserLog(user.getNome(), user.getId()));
 
         log.info("Verificando a role do usuario...");
         if(user.getRole() == UserRole.ADMIN) {
@@ -138,6 +141,7 @@ public class UserService extends LogProducerService {
 
             log.info("Alteração do usuário sendo realizada...");
             userRepository.save(user);
+            logObject.setRegistro("The administrator changes your data");
             log.info("Alteração do usuário foi realizada...");
         }else{
             log.info("Usuário com a role user...");
@@ -155,12 +159,11 @@ public class UserService extends LogProducerService {
 
             log.info("Solicitação de ateração dos campos sendo enviada...");
             fieldChangeRepository.save(fieldChange);
+            logObject.setRegistro("The user requested to change their data");
+
             log.info("Solicitação de ateração dos campos enviada...");
         }
 
-        LogSender logObject = new LogSender();
-        logObject.setUsuario(new UserLog(user.getNome(), user.getId()));
-        logObject.setRegistro("O usuario solicitou a alteracao de seus dados");
         sendMessage(logObject);
 
     }
@@ -207,7 +210,7 @@ public class UserService extends LogProducerService {
             log.info("Salvando a alteracao...");
             fieldChangeRepository.save(fieldChange);
 
-            logObject.setRegistro("O usuario aceitou alteracao de dados com sucesso");
+            logObject.setRegistro("Administrator accepts data change successfully");
             sendMessage(logObject);
 
         }else{
@@ -221,7 +224,7 @@ public class UserService extends LogProducerService {
             log.info("Salvando a rejeicao da alteracao...");
             fieldChangeRepository.save(fieldChange);
 
-            logObject.setRegistro("O usuario rejeitou alteracao de dados");
+            logObject.setRegistro("Administrator rejects data change successfully");
             sendMessage(logObject);
         }
 
@@ -286,13 +289,6 @@ public class UserService extends LogProducerService {
                 listUpdateFieldChange.add(fieldChangeDTO);
             }
         }
-        User user = userSession.userLogged();
-        LogSender logObject = new LogSender();
-        logObject.setUsuario(new UserLog(user.getNome(), user.getId()));
-        logObject.setRegistro("O usuario solicitou a listagem de todos os usuarios");
-        sendMessage(logObject);
-
-
         return listUpdateFieldChange;
     }
 
@@ -338,7 +334,7 @@ public class UserService extends LogProducerService {
         User user = userSession.userLogged();
         LogSender logObject = new LogSender();
         logObject.setUsuario(new UserLog(user.getNome(), user.getId()));
-        logObject.setRegistro("O usuario solicitou os dados do usuario com id = " + listUser.getId());
+        logObject.setRegistro("The user requested user data with id =" + listUser.getId());
         sendMessage(logObject);
 
         return usersResponseDTO;
@@ -398,7 +394,7 @@ public class UserService extends LogProducerService {
 
         LogSender logObject = new LogSender();
         logObject.setUsuario(new UserLog(userlogged.getNome(), userlogged.getId()));
-        logObject.setRegistro("Foi deletado o usuario com id = " + id);
+        logObject.setRegistro("The user with id = "+ id+ " was deleted");
         sendMessage(logObject);
     }
     public void updateRole(UpdateUserRoleRequestDTO roleRequestDTO){
@@ -419,7 +415,7 @@ public class UserService extends LogProducerService {
         User userlogged = userSession.userLogged();
         LogSender logObject = new LogSender();
         logObject.setUsuario(new UserLog(userlogged.getNome(), userlogged.getId()));
-        logObject.setRegistro("Foi alterado a role do usuario com id = " + user.getId());
+        logObject.setRegistro("The user role was changed with id = " + user.getId());
         sendMessage(logObject);
     }
 
@@ -466,10 +462,6 @@ public class UserService extends LogProducerService {
             }
         }
 
-        LogSender logObject = new LogSender();
-        logObject.setUsuario(new UserLog(userLogged.getNome(), userLogged.getId()));
-        logObject.setRegistro("Foi solicitado as notificacoes");
-        sendMessage(logObject);
         return responseNotificationDTO;
     }
 
@@ -483,7 +475,11 @@ public class UserService extends LogProducerService {
 
         LogSender logObject = new LogSender();
         logObject.setUsuario(new UserLog(userLogged.getNome(), userLogged.getId()));
-        logObject.setRegistro("O usuario visualizou as notificacoes");
+        logObject.setRegistro("The user viewed the notifications");
         sendMessage(logObject);
+    }
+
+    public Integer countUser(){
+        return listAllUsers().size();
     }
 }

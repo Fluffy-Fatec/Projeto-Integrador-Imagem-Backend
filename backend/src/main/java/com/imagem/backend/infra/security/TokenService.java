@@ -25,7 +25,7 @@ public class TokenService extends LogProducerService {
         try{
             Algorithm algorithm = Algorithm.HMAC256(secret);
             logObject.setUsuario(new UserLog(user.getNome(), user.getId()));
-            logObject.setRegistro("O usuario efetuou o login com sucesso");
+            logObject.setRegistro("The user has successfully logged in");
             sendMessage(logObject);
             return new LoginResponseDTO(JWT.create()
                     .withIssuer("auth-api")
@@ -35,7 +35,7 @@ public class TokenService extends LogProducerService {
 
         }catch(JWTCreationException e){
             logObject.setUsuario(new UserLog(user.getNome(), user.getId()));
-            logObject.setRegistro("O usuario tentou efetuar o login e falhou ao gerar o token");
+            logObject.setRegistro("The user attempted to log in and failed to generate the token");
             sendMessage(logObject);
             throw new RuntimeException("Erro ao gerar token", e);
 

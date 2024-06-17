@@ -62,7 +62,7 @@ public class EmailServiceSender extends LogProducerService {
             log.info("Novo registro salvo...");
 
             logObject.setUsuario(new UserLog(userLogged.getNome(), userLogged.getId()));
-            logObject.setRegistro("Foi enviado um convite a um novo usuario");
+            logObject.setRegistro("An invitation has been sent to a new user");
             sendMessage(logObject);
 
         }catch (Exception e){
