@@ -113,6 +113,27 @@ public class Controller {
         return ResponseEntity.ok().body(logsGroupByDayList);
     }
 
+    @GetMapping("/log/login")
+    public ResponseEntity<List<LogsGroupByDay>> groupLoginByDay() {
+        List<Log> logs = logRepository.findByRegistroRegex("logged");
+
+        // Agrupando os logs por data de criação (apenas a parte da data, sem a hora) e contando os registros por dia
+        Map<String, Long> groupedLogs = logs.stream()
+                .collect(Collectors.groupingBy(log -> {
+                    // Extrair a data no formato YYYY-MM-DD
+                    String datePart = extractDate(log.getCreationDate());
+                    return datePart;
+                }, Collectors.counting()));
+
+        // Convertendo o Map em uma lista de LogsGroupByDay
+        List<LogsGroupByDay> logsGroupByDayList = groupedLogs.entrySet().stream()
+                .map(entry -> new LogsGroupByDay(entry.getKey(), entry.getValue().intValue()))
+                .collect(Collectors.toList());
+
+
+        return ResponseEntity.ok().body(logsGroupByDayList);
+    }
+
     public static String extractDate(String dateTime) {
         LocalDateTime localDateTime = LocalDateTime.parse(dateTime, DateTimeFormatter.ISO_DATE_TIME);
         return localDateTime.toLocalDate().toString();  // Extrai apenas a parte da data

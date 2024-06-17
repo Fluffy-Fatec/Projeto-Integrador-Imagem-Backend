@@ -217,4 +217,12 @@ public class UserController {
         return ResponseEntity.ok().body(logsGroupByDays);
     }
 
+    @GetMapping("/log/login")
+    public ResponseEntity<List<LogsGroupByDay>> groupLogin(){
+
+        List<LogsGroupByDay> logsGroupByDays = integrationAI.getLogin();
+
+        return ResponseEntity.ok().body(logsGroupByDays);
+    }
+
 }
